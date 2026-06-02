@@ -1,0 +1,7 @@
+# Python runtime for the reproducible audit package
+numpy
+pandas
+Pillow
+matplotlib
+opencv-python
+torch

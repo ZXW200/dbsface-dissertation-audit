@@ -1,0 +1,23 @@
+[build-system]
+requires = ["setuptools>=68", "wheel"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "dbsface-audit"
+version = "2026.6.26"
+description = "Reproducible low-resolution PD-DBS facial-image audit package"
+requires-python = ">=3.10"
+dependencies = [
+  "numpy",
+  "pandas",
+  "Pillow",
+  "matplotlib",
+  "opencv-python",
+  "torch",
+]
+
+[tool.setuptools]
+package-dir = {"" = "src"}
+
+[tool.setuptools.packages.find]
+where = ["src"]
