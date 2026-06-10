@@ -1,0 +1,80 @@
+{
+  "model_type": "numpy_mlp",
+  "label_semantics": "Class 0 = pre-DBS; Class 1 = post-DBS label",
+  "data_path": "C:\\Users\\1\\Desktop\\Lan_Msc\\data\\raw\\PD_DBS_Data.mat",
+  "seed": 42,
+  "val_fraction": 0.2,
+  "normalization": "per-feature z-score fitted on train split",
+  "train": {
+    "n": 937,
+    "class_counts": {
+      "0": 531,
+      "1": 406
+    },
+    "majority_baseline_accuracy": 0.5667022411953042,
+    "accuracy": 1.0,
+    "balanced_accuracy": 1.0,
+    "precision_class1": 1.0,
+    "recall_class1": 1.0,
+    "specificity_class0": 1.0,
+    "f1_class1": 1.0,
+    "auroc": 1.0,
+    "auprc": 1.0,
+    "brier_score": 0.0005073898194303763,
+    "mean_bce_loss": 0.011432476713080631,
+    "confusion_matrix": {
+      "tn": 531,
+      "fp": 0,
+      "fn": 0,
+      "tp": 406
+    }
+  },
+  "val": {
+    "n": 235,
+    "class_counts": {
+      "0": 133,
+      "1": 102
+    },
+    "majority_baseline_accuracy": 0.5659574468085107,
+    "accuracy": 0.9276595744680851,
+    "balanced_accuracy": 0.9246646026831785,
+    "precision_class1": 0.9292929292929293,
+    "recall_class1": 0.9019607843137255,
+    "specificity_class0": 0.9473684210526315,
+    "f1_class1": 0.9154228855721392,
+    "auroc": 0.9800235883827214,
+    "auprc": 0.9734646650410582,
+    "brier_score": 0.05422990544979084,
+    "mean_bce_loss": 0.1900032219335945,
+    "confusion_matrix": {
+      "tn": 126,
+      "fp": 7,
+      "fn": 10,
+      "tp": 92
+    }
+  },
+  "test": {
+    "n": 1171,
+    "class_counts": {
+      "0": 675,
+      "1": 496
+    },
+    "majority_baseline_accuracy": 0.5764304013663536,
+    "accuracy": 0.9521776259607173,
+    "balanced_accuracy": 0.9472909199522103,
+    "precision_class1": 0.9700854700854701,
+    "recall_class1": 0.9153225806451613,
+    "specificity_class0": 0.9792592592592593,
+    "f1_class1": 0.9419087136929462,
+    "auroc": 0.9824103942652331,
+    "auprc": 0.976698847990224,
+    "brier_score": 0.04023539343037628,
+    "mean_bce_loss": 0.1632488216495007,
+    "confusion_matrix": {
+      "tn": 661,
+      "fp": 14,
+      "fn": 42,
+      "tp": 454
+    }
+  }
+}
