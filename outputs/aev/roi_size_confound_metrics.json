@@ -1,0 +1,16 @@
+{
+  "n_rois": 8,
+  "area_vs_raw_mean_drop": {
+    "pearson_r": 0.830674575163443,
+    "pearson_permutation_p_two_sided": 0.008234126984126984,
+    "spearman_rho": 0.8072875102923988,
+    "spearman_permutation_p_two_sided": 0.02003968253968254
+  },
+  "area_vs_size_normalized_drop": {
+    "pearson_r": -0.28074480657308293,
+    "pearson_permutation_p_two_sided": 0.5110119047619047,
+    "spearman_rho": -0.20483414440254896,
+    "spearman_permutation_p_two_sided": 0.6263888888888889
+  },
+  "interpretation": "Raw fixed-atlas mask-out AEV measures total confidence change when a full ROI is masked. Size-normalized AEV is a sensitivity summary that divides that total change by ROI pixel count."
+}
