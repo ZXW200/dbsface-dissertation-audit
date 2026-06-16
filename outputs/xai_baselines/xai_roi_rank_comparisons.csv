@@ -1,0 +1,6 @@
+comparison,spearman_rho,top3_left,top3_right,top3_overlap_count,top3_overlap
+MLP region-mask AEV vs pixel occlusion ROI mean,0.38095238095238104,left_cheek_zygomatic; right_cheek_zygomatic; upper_brow_forehead,nasal_midface; right_periocular; upper_brow_forehead,1,upper_brow_forehead
+MLP region-mask AEV vs pixel occlusion ROI sum,0.6428571428571429,left_cheek_zygomatic; right_cheek_zygomatic; upper_brow_forehead,left_cheek_zygomatic; nasal_midface; upper_brow_forehead,2,left_cheek_zygomatic; upper_brow_forehead
+MLP region-mask AEV vs CNN Grad-CAM ROI energy,0.7857142857142858,left_cheek_zygomatic; right_cheek_zygomatic; upper_brow_forehead,right_cheek_zygomatic; right_periocular; upper_brow_forehead,2,right_cheek_zygomatic; upper_brow_forehead
+MLP region-mask AEV vs CNN region-mask AEV,0.6190476190476191,left_cheek_zygomatic; right_cheek_zygomatic; upper_brow_forehead,right_cheek_zygomatic; right_periocular; upper_brow_forehead,2,right_cheek_zygomatic; upper_brow_forehead
+CNN region-mask AEV vs CNN Grad-CAM ROI energy,0.9523809523809524,right_cheek_zygomatic; right_periocular; upper_brow_forehead,right_cheek_zygomatic; right_periocular; upper_brow_forehead,3,right_cheek_zygomatic; right_periocular; upper_brow_forehead

@@ -1,0 +1,40 @@
+{
+  "feature_family": "per-ROI mean, standard deviation, 10th percentile, 90th percentile, and gradient magnitude mean",
+  "n_features": 40,
+  "n_train": 1172,
+  "n_test": 1171,
+  "seed": 42,
+  "epochs": 1000,
+  "metrics": {
+    "n": 1171,
+    "class_counts": {
+      "0": 675,
+      "1": 496
+    },
+    "majority_baseline_accuracy": 0.5764304013663536,
+    "accuracy": 0.71733561058924,
+    "balanced_accuracy": 0.7155182198327359,
+    "precision_class1": 0.6547842401500938,
+    "recall_class1": 0.7036290322580645,
+    "specificity_class0": 0.7274074074074074,
+    "f1_class1": 0.6783284742468416,
+    "auroc": 0.7870818399044206,
+    "auprc": 0.748364624677252,
+    "brier_score": 0.18816099999250654,
+    "mean_bce_loss": 0.5558502635943212,
+    "confusion_matrix": {
+      "tn": 491,
+      "fp": 184,
+      "fn": 147,
+      "tp": 349
+    }
+  },
+  "strongest_lowlevel_feature_by_abs_d": {
+    "roi_name": "chin_mandible",
+    "feature": "p10",
+    "mean_class0": 0.2258345727953646,
+    "mean_class1": 0.26411823307224097,
+    "diff_class1_minus_class0": 0.03828366027687638,
+    "cohen_d": 0.5028824951122353
+  }
+}

@@ -1,0 +1,24 @@
+{
+  "n": 1171,
+  "class_counts": {
+    "0": 675,
+    "1": 496
+  },
+  "majority_baseline_accuracy": 0.5764304013663536,
+  "accuracy": 0.71733561058924,
+  "balanced_accuracy": 0.7155182198327359,
+  "precision_class1": 0.6547842401500938,
+  "recall_class1": 0.7036290322580645,
+  "specificity_class0": 0.7274074074074074,
+  "f1_class1": 0.6783284742468416,
+  "auroc": 0.7870818399044206,
+  "auprc": 0.748364624677252,
+  "brier_score": 0.18816099999250654,
+  "mean_bce_loss": 0.5558502635943212,
+  "confusion_matrix": {
+    "tn": 491,
+    "fp": 184,
+    "fn": 147,
+    "tp": 349
+  }
+}

@@ -1,0 +1,7 @@
+{
+  "description": "Pixel-level occlusion baseline aggregated into the same eight fixed ROIs.",
+  "n_test": 1171,
+  "n_pixels": 1024,
+  "pixel_batch": 16,
+  "comparison_table": "C:\\Users\\1\\Desktop\\Lan_Msc\\FINAL_SUBMISSION_SUBMIT_20260626\\outputs\\xai_baselines\\xai_roi_rank_comparisons.csv"
+}
