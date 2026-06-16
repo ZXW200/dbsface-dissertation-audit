@@ -1,0 +1,16 @@
+{
+  "data_path": "C:\\Users\\1\\Desktop\\Lan_Msc\\FINAL_SUBMISSION_CLEAN_20260531\\data\\raw\\PD_DBS_Data.mat",
+  "n_train": 1172,
+  "n_test": 1171,
+  "exact_duplicate_pairs": 0,
+  "exact_label_conflicts": 0,
+  "near_mse_threshold": 1e-05,
+  "near_mse_pairs": 0,
+  "near_mse_label_conflicts": 0,
+  "cosine_threshold": 0.999,
+  "near_cosine_pairs": 2,
+  "median_nearest_mse": 0.005532026290893555,
+  "min_nearest_mse": 0.0002943873405456543,
+  "median_max_cosine": 0.9875499606132507,
+  "max_cosine": 0.9995172619819641
+}
