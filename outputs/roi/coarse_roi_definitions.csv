@@ -1,0 +1,9 @@
+roi_index,roi_name,description,y_start,y_end_exclusive,x_start,x_end_exclusive,pixel_count
+1,upper_brow_forehead,Upper face / brow / forehead,0,8,4,28,192
+2,left_periocular,Image-left periocular region,8,15,0,14,98
+3,right_periocular,Image-right periocular region,8,15,18,32,98
+4,nasal_midface,Nasal bridge / central midface,8,22,14,18,56
+5,left_cheek_zygomatic,Image-left cheek / zygomatic region,15,24,0,14,126
+6,right_cheek_zygomatic,Image-right cheek / zygomatic region,15,24,18,32,126
+7,perioral_mouth,Perioral / mouth region,24,28,8,24,64
+8,chin_mandible,Chin / mandible region,28,32,6,26,80
