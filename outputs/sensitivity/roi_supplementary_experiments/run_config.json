@@ -1,0 +1,23 @@
+{
+  "data": "data/raw/PD_DBS_Data.mat",
+  "model": "models/baseline_mlp_numpy.npz",
+  "roi_masks": "outputs/roi/coarse_roi_masks.npy",
+  "roi_defs": "outputs/roi/coarse_roi_definitions.csv",
+  "fixed_metrics": "outputs/aev/region_only_metrics.csv",
+  "fixed_predictions": "outputs/aev/region_only_predictions.csv",
+  "yunet_metrics": "outputs/external/pd_dbs_yunet_region_only/yunet_region_only_metrics.csv",
+  "yunet_predictions": "outputs/external/pd_dbs_yunet_region_only/yunet_region_only_predictions.csv",
+  "yunet_audit": "outputs/external/pd_dbs_yunet_feasibility/yunet_detection_audit.csv",
+  "output_dir": "outputs/sensitivity/roi_supplementary_experiments",
+  "upsample_size": 256,
+  "bootstrap_n": 1000,
+  "bootstrap_seed": 20260626,
+  "yunet_multiseed": "0,1,2,42,1024",
+  "permutation_seeds": "0,1,2",
+  "val_fraction": 0.2,
+  "epochs": 300,
+  "hidden": 64,
+  "batch_size": 64,
+  "lr": 0.001,
+  "l2": 0.0001
+}

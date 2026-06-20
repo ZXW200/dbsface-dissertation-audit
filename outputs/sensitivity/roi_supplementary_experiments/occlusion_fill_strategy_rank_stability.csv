@@ -1,0 +1,4 @@
+fill_strategy,spearman_vs_train_mean,top1_roi,top3_overlap_with_train_mean,top3_roi
+blur3_same_image,0.2142857142857143,left_periocular,1,left_periocular;upper_brow_forehead;right_periocular
+train_mean,1.0,upper_brow_forehead,3,upper_brow_forehead;right_cheek_zygomatic;left_cheek_zygomatic
+zero,0.5952380952380953,left_cheek_zygomatic,2,left_cheek_zygomatic;upper_brow_forehead;nasal_midface
