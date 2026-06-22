@@ -1,0 +1,12 @@
+{
+  "n_test": 1171,
+  "n_features_confound": 40,
+  "seed": 42,
+  "n_folds": 5,
+  "model_a_confound_only_auroc": 0.7709,
+  "model_b_confound_plus_mlp_auroc": 0.9752,
+  "net_increment": 0.2043,
+  "auroc_x_full": 0.7708960573476703,
+  "auroc_y_full": 0.9751911589008364,
+  "net_increment_full": 0.2042951015531661
+}
