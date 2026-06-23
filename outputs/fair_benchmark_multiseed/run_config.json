@@ -1,0 +1,64 @@
+﻿{
+  "args": {
+    "amoe_epochs": 120,
+    "amoe_lr": 0.0008,
+    "amoe_patience": 18,
+    "amoe_pos_weight_scale": 0.6,
+    "batch_size": 64,
+    "cnn_epochs": 90,
+    "cnn_lr": 0.0003,
+    "cnn_patience": 16,
+    "data": "data/raw/PD_DBS_Data.mat",
+    "force": true,
+    "min_delta": 0.0001,
+    "mlp_batch_size": 64,
+    "mlp_epochs": 300,
+    "mlp_hidden": 64,
+    "mlp_l2": 0.0001,
+    "mlp_lr": 0.001,
+    "mlp_val_fraction": 0.2,
+    "models": "logistic,mlp,smallcnn_mild,resnet18,efficientnet_b0,convnext_tiny,roi_amoe",
+    "n_bins": 10,
+    "output_dir": "outputs/fair_benchmark_multiseed",
+    "root": ".",
+    "seeds": "0,1,2,42,1024,2048",
+    "smallcnn_epochs": 100,
+    "smallcnn_patience": 18,
+    "val_fraction": 0.2,
+    "weight_decay": 0.0001
+  },
+  "class_convention": {
+    "class_0": "pre-DBS state",
+    "class_1": "post-DBS label",
+    "positive_class": "Class 1"
+  },
+  "completed": "2026-06-12T13:25:03",
+  "data": "data/raw/PD_DBS_Data.mat",
+  "device": "cuda",
+  "models": [
+    "logistic",
+    "mlp",
+    "smallcnn_mild",
+    "resnet18",
+    "efficientnet_b0",
+    "convnext_tiny",
+    "roi_amoe"
+  ],
+  "output_dir": "outputs/fair_benchmark_multiseed",
+  "protocol": {
+    "cnn_family": "32 x 32 single-channel scratch training, low-resolution stems, mild train-only augmentation, no ImageNet weights, no upsampling",
+    "fixed_supplied_test_split": true,
+    "normalization_fit": "seed-specific training fold only",
+    "roi_amoe": "Residual ROI-aware AMoE with global branch, ROI experts, uniform ROI gate, no auxiliary losses, ROI dropout, and mild train-only image augmentation.",
+    "stratified_validation_fraction": 0.2
+  },
+  "root": "C:\\Users\\1\\Desktop\\Lan_Msc\\FINAL_SUBMISSION_CLEAN_20260531",
+  "seeds": [
+    0,
+    1,
+    2,
+    42,
+    1024,
+    2048
+  ]
+}
