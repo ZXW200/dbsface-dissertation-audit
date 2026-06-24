@@ -1,0 +1,83 @@
+{
+  "model_type": "small_torch_cnn_for_gradcam",
+  "seed": 42,
+  "epochs_requested": 100,
+  "epochs_run": 78,
+  "device": "cpu",
+  "class_convention": {
+    "0": "pre-DBS",
+    "1": "post-DBS label"
+  },
+  "train": {
+    "n": 937,
+    "class_counts": {
+      "0": 531,
+      "1": 406
+    },
+    "majority_baseline_accuracy": 0.5667022411953042,
+    "accuracy": 1.0,
+    "balanced_accuracy": 1.0,
+    "precision_class1": 1.0,
+    "recall_class1": 1.0,
+    "specificity_class0": 1.0,
+    "f1_class1": 1.0,
+    "auroc": 1.0,
+    "auprc": 1.0,
+    "brier_score": 3.293841185428484e-06,
+    "mean_bce_loss": 0.0009541375358315298,
+    "confusion_matrix": {
+      "tn": 531,
+      "fp": 0,
+      "fn": 0,
+      "tp": 406
+    }
+  },
+  "val": {
+    "n": 235,
+    "class_counts": {
+      "0": 133,
+      "1": 102
+    },
+    "majority_baseline_accuracy": 0.5659574468085107,
+    "accuracy": 0.9659574468085106,
+    "balanced_accuracy": 0.9653545628777827,
+    "precision_class1": 0.9607843137254902,
+    "recall_class1": 0.9607843137254902,
+    "specificity_class0": 0.9699248120300752,
+    "f1_class1": 0.9607843137254902,
+    "auroc": 0.99609317411175,
+    "auprc": 0.9944957814313036,
+    "brier_score": 0.02167030058300648,
+    "mean_bce_loss": 0.07415411703361975,
+    "confusion_matrix": {
+      "tn": 129,
+      "fp": 4,
+      "fn": 4,
+      "tp": 98
+    }
+  },
+  "test": {
+    "n": 1171,
+    "class_counts": {
+      "0": 675,
+      "1": 496
+    },
+    "majority_baseline_accuracy": 0.5764304013663536,
+    "accuracy": 0.9743808710503843,
+    "balanced_accuracy": 0.9726986260454002,
+    "precision_class1": 0.9774590163934426,
+    "recall_class1": 0.9616935483870968,
+    "specificity_class0": 0.9837037037037037,
+    "f1_class1": 0.9695121951219513,
+    "auroc": 0.9950776583034648,
+    "auprc": 0.9937030649726561,
+    "brier_score": 0.022068617964631453,
+    "mean_bce_loss": 0.08462972559360467,
+    "confusion_matrix": {
+      "tn": 664,
+      "fp": 11,
+      "fn": 19,
+      "tp": 477
+    }
+  }
+}

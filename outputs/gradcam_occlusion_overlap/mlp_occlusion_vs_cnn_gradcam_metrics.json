@@ -1,0 +1,20 @@
+{
+  "comparison": "existing MLP ROI occlusion versus CNN true-class Grad-CAM ROI projection",
+  "roi_spearman_rank_correlation": 0.7857142857142858,
+  "top3_mlp_occlusion": [
+    "left_cheek_zygomatic",
+    "right_cheek_zygomatic",
+    "upper_brow_forehead"
+  ],
+  "top3_gradcam": [
+    "right_cheek_zygomatic",
+    "right_periocular",
+    "upper_brow_forehead"
+  ],
+  "top3_overlap": [
+    "right_cheek_zygomatic",
+    "upper_brow_forehead"
+  ],
+  "top3_overlap_count": 2,
+  "top3_overlap_fraction": 0.6666666666666666
+}

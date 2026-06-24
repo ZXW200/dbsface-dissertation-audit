@@ -1,0 +1,50 @@
+{
+  "primary_comparison": "same-CNN ROI occlusion versus true-class Grad-CAM ROI projection",
+  "cnn_test_accuracy": 0.9743808710503843,
+  "cnn_test_balanced_accuracy": 0.9726986260454002,
+  "cnn_test_auroc": 0.9950776583034648,
+  "roi_spearman_rank_correlation": 0.9523809523809524,
+  "top1_match": true,
+  "top3_occlusion": [
+    "right_cheek_zygomatic",
+    "right_periocular",
+    "upper_brow_forehead"
+  ],
+  "top3_gradcam": [
+    "right_cheek_zygomatic",
+    "right_periocular",
+    "upper_brow_forehead"
+  ],
+  "top3_overlap": [
+    "right_cheek_zygomatic",
+    "right_periocular",
+    "upper_brow_forehead"
+  ],
+  "top3_overlap_count": 3,
+  "top3_overlap_fraction": 1.0,
+  "pixel_topk_overlap": [
+    {
+      "top_fraction": 0.1,
+      "intersection_pixels": 22,
+      "union_pixels": 272,
+      "iou": 0.08088235294117647,
+      "dice": 0.14965986394557823
+    },
+    {
+      "top_fraction": 0.2,
+      "intersection_pixels": 108,
+      "union_pixels": 387,
+      "iou": 0.27906976744186046,
+      "dice": 0.43636363636363634
+    },
+    {
+      "top_fraction": 0.3,
+      "intersection_pixels": 214,
+      "union_pixels": 509,
+      "iou": 0.4204322200392927,
+      "dice": 0.5919778699861687
+    }
+  ],
+  "mean_map_cosine_similarity": 0.7046934366226196,
+  "mean_map_pearson_correlation": 0.20738678305528482
+}
