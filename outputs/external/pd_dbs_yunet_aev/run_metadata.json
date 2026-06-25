@@ -1,0 +1,10 @@
+{
+  "data": "C:\\Users\\1\\Desktop\\Lan_Msc\\data\\raw\\PD_DBS_Data.mat",
+  "model": "C:\\Users\\1\\Desktop\\Lan_Msc\\models\\baseline_mlp_numpy.npz",
+  "yunet_audit": "C:\\Users\\1\\Desktop\\Lan_Msc\\outputs\\external\\pd_dbs_yunet_feasibility\\yunet_detection_audit.csv",
+  "output_dir": "C:\\Users\\1\\Desktop\\Lan_Msc\\outputs\\external\\pd_dbs_yunet_aev",
+  "upsample_size": 256,
+  "detection_rate": 1.0,
+  "n_images": 2343,
+  "n_test": 1171
+}

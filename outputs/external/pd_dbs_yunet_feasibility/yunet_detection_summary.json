@@ -1,0 +1,20 @@
+{
+  "n_images": 2343,
+  "upsample_size": 256,
+  "score_threshold": 0.3,
+  "detected_total": 2343,
+  "detected_fraction": 1.0,
+  "detected_by_split": {
+    "test": 1.0,
+    "train": 1.0
+  },
+  "detected_by_label": {
+    "0": 1.0,
+    "1": 1.0
+  },
+  "n_detected_by_label": {
+    "0": 1339,
+    "1": 1004
+  },
+  "median_score_detected": 0.9234558939933777
+}
