@@ -1,0 +1,133 @@
+
+\section{Facial Phenotyping and Face2Gene}
+
+Facial phenotyping AI aims to identify phenotype-relevant facial patterns from images. In genetic medicine, Face2Gene-style systems have been used to support recognition of syndromic facial features. Earlier work showed that diagnostically relevant facial gestalt can be extracted from ordinary photographs. DeepGestalt and GestaltMatcher provide key reference points for computational rare-disease facial phenotyping \boxcite{ferry2014gestalt} \boxcite{gurovich2019deepgestalt} \boxcite{hsieh2022gestaltmatcher}. The broader implication is that facial phenotype information can be represented computationally and compared against learned disease-associated patterns.
+
+
+A diagnostic support system also needs enough transparency for users to understand model behaviour. In medical AI, a model that is accurate but uninterpretable may be difficult to trust, audit, or safely deploy \boxcite{rudin2019stop} \boxcite{kelly2019key}.
+
+
+The difficulty is that facial appearance is a complex biomarker-like signal. It can encode disease-related morphology, age, sex, ancestry, pose, image quality, expression, camera settings, and background information at the same time. A model trained on facial data may therefore learn clinically meaningful phenotype information, alongside confounding signals. This is particularly important for rare-disease diagnosis, where data are often limited, heterogeneous, and collected across different sites. It is also important for neurological use cases, where facial expression and image acquisition conditions can interact with the target label.
+
+
+The Explainable Face2Gene Diagnosis direction responds to this challenge by asking whether facial-AI predictions can be explained and audited. A clinically useful facial AI system should provide an output that can be questioned: which facial regions contributed to the prediction, how stable is the explanation, is the model calibrated, and which data conditions shape interpretation? This dissertation addresses these questions at the level of methodology.
+
+
+\section{Parkinson's Disease, DBS, and Facial Digital Biomarkers}
+
+Parkinson's disease provides a concrete neurological motivation for facial-image analysis. Motor features such as bradykinesia, rigidity, tremor, gait impairment, and postural instability are central to clinical assessment, and reduced facial expressivity is a recognised manifestation of the disease \boxcite{jankovic2008parkinsons} \boxcite{marsili2014hypomimia}. Hypomimia and facial bradykinesia are relevant because they make the face a potential source of motor-state information, although their interpretation depends on task design, medication state, disease stage, and clinical scoring.
+
+
+Deep brain stimulation is an established therapy for advanced Parkinson's disease, with major trials and long-term studies showing motor benefit in appropriately selected patients \boxcite{deuschl2006dbs} \boxcite{krack2003stn} \boxcite{weaver2009dbs}. These clinical studies motivate interest in measurable pre-/post-treatment phenotypes, including facial motor behaviour. The present dissertation uses supplied pre-DBS and post-DBS image labels as a constrained benchmark for method development.
+
+
+Recent computer-vision work strengthens the rationale for facial digital biomarkers in Parkinson's disease. Automated assessment of hypomimia and facial bradykinesia has been studied using facial video and computer-vision features, showing that facial movement can be quantified in neurological settings \boxcite{abrami2021hypomimia} \boxcite{novotny2022facialbradykinesia}. Kinematic measurement work also shows that movement-disorder assessment can benefit from quantitative motor features when those features are linked to validated clinical scales \boxcite{heldman2011automated}.
+
+
+This literature motivates the dissertation's audit question. If a facial classifier separates supplied pre-/post-DBS labels, the next question is how the model uses facial regions and whether that behaviour can be reported reproducibly. The low-resolution static images used here provide a constrained benchmark with less task control than facial video studies. The contribution is an auditable explanation workflow for the available image-level data, grounded in the broader PD facial-biomarker context.
+
+
+\section{Explainable AI in Medical Imaging}
+
+Explainable AI methods in medical imaging include saliency maps, CAM/Grad-CAM, Integrated Gradients, occlusion testing, concept-based methods, and region-based perturbation \boxcite{simonyan2013deep} \boxcite{zhou2016cam} \boxcite{selvaraju2017gradcam} \boxcite{sundararajan2017ig} \boxcite{zeiler2014visualizing} \boxcite{kim2018tcav}. These methods build on the broader deep-learning image-analysis literature, and medical deployment adds attention to validation, uncertainty, and clinical workflow integration \boxcite{goodfellow2016deeplearning} \boxcite{litjens2017survey} \boxcite{liu2020consortai} \boxcite{vasey2022decideai} \boxcite{sendak2020path}. Grad-CAM can produce class-specific heatmaps from CNN feature maps using convolutional activations and gradients \boxcite{zhou2016cam} \boxcite{selvaraju2017gradcam}. Occlusion-based methods perturb input regions and measure output changes, directly testing functional contribution \boxcite{zeiler2014visualizing} \boxcite{fong2017meaningful}.
+
+
+For this dissertation, occlusion-based evidence is useful because it can be applied to any model that outputs probabilities and fits the dependency-light implementation.
+
+
+Saliency and CAM methods have an intuitive appeal because they produce image-like outputs. A heatmap can be overlaid on a scan, face, or histology image, giving the impression of spatial explanation. Heatmaps also have known weaknesses. They may vary with architecture, preprocessing, target layer, gradient saturation, or interpolation method, and saliency maps can be fragile or unreliable under input or model changes \boxcite{ghorbani2019fragile} \boxcite{kindermans2019unreliability} \boxcite{adebayo2018sanity}. They can also be hard to compare between individuals. In a clinical report, a heatmap that looks plausible may still be difficult to audit statistically.
+
+
+Perturbation methods provide a complementary perspective by altering the input and observing the change in output. Occlusion is simple, which is useful in constrained settings. If masking a facial region consistently reduces true-class confidence, that region has functional influence for the trained model. If retaining a region preserves some predictive performance, that region contains independent signal. These scores are functional model measurements because they describe how the trained model responds when facial content is perturbed.
+
+
+Region-based perturbation also makes explanation measurable. The analysis compresses thousands of pixel scores into a small number of region scores. This supports confidence intervals, permutation testing, FDR correction, and robustness checks. The present dissertation uses this property to turn explanations into an AEV.
+
+
+This literature also shows why explanation methods need critical handling. LIME and SHAP frame explanation as a local or additive approximation problem, which is useful but dependent on assumptions about the simplified explanation space \boxcite{ribeiro2016lime} \boxcite{lundberg2017shap}. Grad-CAM provides spatial localisation for CNNs, but it depends on network internals and target layers \boxcite{selvaraju2017gradcam}. Saliency sanity-check work further warns that some visual explanations can appear plausible even when they are insensitive to model parameters or labels \boxcite{adebayo2018sanity}. The implication for this dissertation is that explanation should be treated as an empirical measurement requiring validation.
+
+
+Faithfulness benchmarks give a stricter reference point for this principle. Deletion and insertion tests evaluate whether removing or adding high-ranked pixels changes model scores as expected, and ROAR retrains models after removing features ranked important by an explainer \boxcite{petsiuk2018rise} \boxcite{hooker2019benchmark}. These tests are strongest in larger, higher-resolution image settings and are computationally heavier than the present MSc workflow. They still define the relevant standard: explanation quality should be checked through model-output behaviour, with visual appearance used as supporting context. This dissertation applies that standard at ROI scale through mask-out AEV, pixel-occlusion aggregation, region-only validation, and ROI-rank agreement checks.
+
+
+\section{Region-Aligned Facial Evidence}
+
+Concept- and region-based XAI motivates the idea of translating model behaviour from pixel-level attribution into human-auditable evidence units \boxcite{kim2018tcav} \boxcite{koh2020concept} \boxcite{zeiler2014visualizing}. In this dissertation, that principle is implemented by mapping occlusion effects into coarse facial regions. Such vectors can be compared statistically, assessed across operating thresholds, audited for stability, and used to produce structured reports.
+
+
+This dissertation adapts that logic to 32$\times$32 grayscale images. Fine landmark-based 18-ROI extraction is unreliable at this resolution, so the completed implementation uses eight coarse named facial ROIs as a low-resolution regional implementation.
+
+
+The independent contribution is a reproducible test of the evidence-vector idea under constrained MSc project conditions, where the images are 32$\times$32 grayscale and labels are supplied numerically. The workflow combines an occlusion-first implementation with leakage sensitivity, calibration reporting, class-specific ROI statistics, region-only validation, perturbation robustness, and a compact Grad-CAM agreement check. The result is an auditable pipeline for low-resolution facial evidence.
+
+
+The shift from heatmap to evidence vector is central. A heatmap is an image. An AEV is a table-like representation. Each component corresponds to a named coarse region, such as upper brow/forehead, periocular region, nasal midface, cheek/zygomatic region, perioral/mouth, or chin/mandible. This makes the explanation compatible with statistical inference. For example, one can ask whether Class 0 and Class 1 differ in chin/mandible evidence after multiple-testing correction, or whether the ranking of high-evidence regions remains stable under mild blur.
+
+
+The evidence vector also supports accountable reporting. ROI definitions, mask checks, evidence scores, class-comparison statistics, and robustness outputs can be exported as structured artefacts that are easier to inspect than isolated heatmap examples.
+
+
+The chosen eight-ROI design reflects a coarse facial-region scale. A low-resolution face can support broad regional distinctions, while reliable boundaries between narrow facial substructures depend on higher-resolution data. Modern face detection and alignment systems such as MTCNN, RetinaFace, and YuNet show why higher-resolution face geometry is normally used for automatic landmark localisation \boxcite{zhang2016mtcnn} \boxcite{deng2020retinaface} \boxcite{wu2023yunet}.
+
+
+\section{Calibration and Trustworthy Prediction}
+
+Calibration measures whether predicted probabilities reflect observed outcome frequencies. In medical AI, calibrated confidence matters because decisions often depend on both the predicted class and the confidence assigned to it \boxcite{guo2017calibration} \boxcite{vancalster2019calibration}. This dissertation reports Brier score and expected calibration error (ECE) for the supplied pre-/post-DBS label classification task.
+
+
+Calibration is distinct from discrimination. A model can rank positive and negative cases well, giving a high AUROC, and still produce overconfident probabilities. A calibrated model can also have weak class separation. Both properties matter. Discrimination describes whether the model separates classes. Calibration describes whether its probabilities are meaningful as probabilities.
+
+
+In this dissertation, calibration is treated as a descriptive property of the supplied label task. It matters for the explanation workflow because AEV is based on changes in true-class confidence. Reporting Brier score, ECE, and reliability bins helps determine whether the confidence values used in the explanation analysis are numerically stable.
+
+
+Expected calibration error summarises the absolute gap between predicted probability and observed class frequency across probability bins, following common binned calibration practice \boxcite{naeini2015calibration} \boxcite{guo2017calibration}. Brier score measures the mean squared difference between probability and outcome \boxcite{brier1950verification}. These metrics are simple, reproducible, and appropriate for the available short-cycle project.
+
+
+Calibration is also vulnerable to dataset shift. A model that appears calibrated on one split may become miscalibrated when image acquisition, patient population, or label distribution changes \boxcite{ovadia2019uncertainty} \boxcite{roberts2021pitfalls}. Calibration in the present dissertation is reported as a property of the local numeric test set. External calibration and subgroup calibration remain future work.
+
+
+\section{Region-Based Functional Validation}
+
+Region-based occlusion methods are useful because they test whether a region influences model output. Mask-out analysis tests whether removing a region reduces confidence. Region-only analysis measures the fixed-model response when one region is retained. These methods build on perturbation-based explanation work and help distinguish functional evidence from visually plausible attribution \boxcite{zeiler2014visualizing} \boxcite{fong2017meaningful} \boxcite{petsiuk2018rise}.
+
+
+The distinction between mask-out and region-only is important. Mask-out asks whether neutralising a region changes full-face confidence. A large confidence drop after masking suggests that the region contributes to the original full-face prediction. Region-only asks how the classifier responds when one region is retained and the rest of the face is replaced by a baseline value. A region may contribute strongly in mask-out testing and remain weak in region-only testing if it works mainly in combination with other regions. A region may also show moderate region-only performance and contribute less to the full-face prediction \boxcite{zeiler2014visualizing} \boxcite{samek2017evaluating}.
+
+
+This dissertation uses both views because they answer different questions. The occlusion-based AEV uses mask-out evidence to create per-image regional evidence scores. Region-only validation then checks whether individual regions retain signal. Together, they support an experimentally perturbed representation of model behaviour.
+
+
+\section{Low-Resolution Facial Images and Regional Precision}
+
+Many facial AI pipelines assume higher-resolution images where landmarks, segmentation masks, and fine-grained regions can be extracted \boxcite{kazemi2014one} \boxcite{zhang2016mtcnn} \boxcite{bulat2017far} \boxcite{deng2020retinaface}. The present dataset is different. Each image contains 1024 pixels. Human faces are visible. Small structures such as eyelids, nasolabial folds, philtrum boundaries, and precise jawline contours fall below reliable segmentation scale. Very-low-resolution face analysis is known to change what can be inferred reliably from facial images, so this changes the methodological standard \boxcite{zou2012lowres}.
+
+
+Regional interpretation should match the available resolution. A coarse upper-face, periocular, midface, cheek, mouth, and chin/mandible partition preserves enough structure to support region-based analysis with resolution-appropriate precision. The eight-region design is a low-resolution facial ROI scheme. A complete craniofacial atlas depends on higher-resolution data.
+
+
+\section{Leakage, Reproducibility, and Short-Cycle Audit Design}
+
+Applied medical AI projects often face incomplete metadata. The ideal split for patient images is patient-level, keeping images from the same individual on one side of the train/test boundary. Leakage and site- or subject-related shortcuts can otherwise make medical-image models appear to generalise better than they really do \boxcite{zech2018variable} \boxcite{roberts2021pitfalls} \boxcite{kapoor2023leakage} \boxcite{varoquaux2018crossvalidation}. This literature motivates the duplicate, similarity-threshold, global-statistics, and ROI low-level checks used in this project.
+
+
+The dissertation includes duplicate and near-duplicate checks to assess image-level leakage sensitivity. Exact hashing tests whether identical images occur across train and test splits. Nearest-neighbour MSE and cosine similarity tests identify highly similar images. Similarity-threshold and low-level baseline checks then assess whether the headline result remains tied to obvious image similarity, brightness, texture, or framing summaries.
+
+
+Reproducibility also matters. The project exports predictions, metrics, calibration bins, ROI definitions, AEV tables, class-comparison statistics, robustness summaries, and frozen result files. The dissertation therefore reports conclusions and the computational artefacts needed to audit them.
+
+
+\section{Ethics, Privacy, and Intended Use}
+
+Facial images are sensitive data. Even low-resolution images can be personal, and higher-resolution facial datasets may create re-identification risks. This is particularly important in medical AI because facial images can be linked to health status, genetic information, neurological conditions, or treatment history. An explainable facial AI framework therefore needs privacy-aware reporting as well as technical performance.
+
+
+The present dissertation uses low-resolution quality-control examples and aggregate plots for visual reporting. This keeps reporting aligned with a method-development audit of facial ROI evidence.
+
+
+Ethically, the most important reporting issue is interpretation. A high-performing facial classifier can appear clinically persuasive when labels are image-level and patient independence is unverified. Responsible medical AI reporting aligns the interpretation, metadata record, and validation level with the available evidence \boxcite{liu2020consortai} \boxcite{vasey2022decideai}.
+
+
+Future applications of AEV to Face2Gene-like data should include a data governance plan. Such a plan should specify consent, data access, storage, retention, anonymisation, figure-sharing rules, model release conditions, and review of subgroup performance. Explainability can support governance by making model behaviour easier to inspect.
+
+

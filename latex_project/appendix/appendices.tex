@@ -1,0 +1,223 @@
+
+\chapter{PRJ17-LU-EFG - Explainable Face2Gene Diagnosis Project Specification}
+
+This appendix records the project specification for PRJ17-LU-EFG - Explainable Face2Gene Diagnosis. It follows the original specification format and reflects the final data access, technical scope, and reporting boundary.
+
+
+Project title: PRJ17-LU-EFG - Explainable Face2Gene Diagnosis.
+
+
+Dissertation title: Toward Explainable Face2Gene Diagnosis: A Coarse-ROI Occlusion Evidence Pipeline for Low-resolution Facial Phenotyping.
+
+
+Student: Zixu Wang.
+
+
+Supervisor: Dr. Richard Jiang.
+
+
+Project hosted by the School of Computing and Communications, Lancaster University.
+
+
+Project period: 1 June 2026 to 1 September 2026.
+
+
+Motivation:
+
+
+Facial phenotyping models can extract medically relevant signals from face images, but the evidence behind a prediction can be difficult to inspect. Pixel-level heatmaps are useful for illustration. Dissertation-level evaluation also needs reproducible measurements, statistical comparison, calibration checks, and functional tests of whether facial regions influence model output. The project is aligned with the Explainable Face2Gene Diagnosis theme by developing an auditable facial-evidence workflow.
+
+
+The working analysis uses low-resolution facial images from a PD-DBS setting. This dataset gives a constrained but useful test case: the images are small and the labels use the Class 0/Class 1 pre-/post-DBS convention. These conditions make the project suitable for technical image-level audit and evidence-vector development.
+
+
+Data:
+
+
+The working data file is \path{data/raw/PD_DBS_Data.mat}. It contains \texttt{\detokenize{x_train}}, \texttt{\detokenize{x_test}}, \texttt{\detokenize{y_train}}, and \texttt{\detokenize{y_test}}, with 2343 grayscale facial images represented as 32$\times$32 arrays. The supplied split contains 1172 training images and 1171 test images. The project label convention is Class 0 for pre-DBS images and Class 1 for the supplied post-DBS label.
+
+
+The file available for this dissertation provides image arrays and labels; patient identifiers, session identifiers, source-cohort details, acquisition protocol, original image resolution, down-sampling history, clinical motor scores, DBS settings, medication timing, and acquisition metadata are outside the provided metadata record. These data conditions define the scope of the project. The dissertation evaluates image-level classification and facial ROI-level explanation behaviour under the supplied split.
+
+
+Aims:
+
+
+The main aim is to develop and evaluate a reproducible coarse-ROI occlusion evidence pipeline for explainable facial phenotyping toward Explainable Face2Gene Diagnosis.
+
+
+The practical aim is to test whether model behaviour on low-resolution facial images can be converted into named facial-region evidence that can be audited with statistical, calibration, and robustness checks.
+
+
+Objectives:
+
+
+\begin{enumerate}
+\item Inspect the supplied PD-DBS facial-image data and document its structure, labels, and metadata scope.
+\item Establish a reproducible pre-/post-DBS image-level baseline.
+\item Define a coarse facial ROI representation suitable for 32$\times$32 grayscale images.
+\item Convert model behaviour into occlusion-based Anatomical Evidence Vector scores over facial ROIs.
+\item Evaluate ROI evidence using class-specific statistics, mask-out testing, ROI-size sensitivity, region-only validation, calibration, leakage sensitivity, and robustness checks.
+\item Add automatic ROI, compact CNN, and Grad-CAM checks where they can be run reproducibly within the available environment.
+\item Assemble a final dissertation package with structured outputs, generated figures, structured Python source code, references, and appendices.
+\end{enumerate}
+
+Technical approach:
+
+
+The project will use a structured Python workflow. The locked MLP and AEV audit is dependency-light. YuNet, compact CNN, and Grad-CAM checks use additional computer-vision and deep-learning libraries. The first stage loads the MATLAB file, reconstructs the 32$\times$32 images, verifies orientation, and checks class counts. The second stage trains a lightweight baseline classifier and exports test predictions for downstream audit. The third stage runs duplicate, near-duplicate, similarity-threshold, global-statistics, ROI low-level, and alignment checks to assess possible shortcut and leakage risks.
+
+
+The explanation stage defines eight mutually exclusive coarse facial ROIs. For each test image, the pipeline masks one ROI at a time and measures the change in true-class confidence. These confidence drops form an occlusion-based Anatomical Evidence Vector. The project then compares ROI evidence across classes, checks the relationship between raw evidence drops and ROI pixel count, tests individual regions through region-only inputs, and reports calibration metrics because AEV values are based on probability changes.
+
+
+Additional checks examine whether the ROI findings are sensitive to region definition, random seed, image perturbation, occlusion fill strategy, and compact CNN explanation view. These checks support methodological audit and help separate stable evidence patterns from artefacts of one ROI design or one model run.
+
+
+\begin{table}[htbp]
+\centering
+\scriptsize
+\caption{Timeline}
+\begin{tabularx}{\textwidth}{>{\raggedright\arraybackslash}X>{\raggedright\arraybackslash}X>{\raggedright\arraybackslash}X}
+\toprule
+Period & Planned work & Expected output \\
+\midrule
+Weeks 1-2 & Data access, loader, smoke tests, label convention, ethics documentation & Data checklist and working loader \\
+Weeks 3-4 & Baseline model and prediction export & Baseline metrics and prediction files \\
+Weeks 5-6 & Data-quality, leakage, calibration, and alignment audit & QC and calibration summaries \\
+Weeks 7-8 & Coarse ROI design and occlusion-based AEV implementation & ROI masks and AEV tables \\
+Weeks 9-10 & Class-specific ROI statistics and region-only validation & Statistical and functional validation outputs \\
+Weeks 11-12 & Robustness checks, automatic ROI sensitivity, compact CNN, and Grad-CAM consistency & Sensitivity and agreement outputs \\
+Week 13 & Dissertation assembly, figure/table assembly, and final package preparation & Final PDF, LaTeX source, and structured source package \\
+\bottomrule
+\end{tabularx}
+\end{table}
+
+Deliverables:
+
+
+\begin{itemize}
+\item a reproducible data-loading and inspection workflow.
+\item a baseline pre-/post-DBS classifier.
+\item coarse facial ROI masks suitable for 32$\times$32 grayscale images.
+\item occlusion-based AEV outputs and ROI-level statistical summaries.
+\item mask-out, region-only, calibration, leakage, and robustness audit outputs.
+\item automatic ROI, compact CNN, and explanation-consistency outputs.
+\item final dissertation figures and tables generated from structured Python source code.
+\item a final LaTeX dissertation package with bibliography, appendices, structured outputs, and structured Python source code.
+\end{itemize}
+
+Scope updates from the original specification:
+
+
+The original proposal used the broader Explainable Face2Gene Diagnosis direction and included the possibility of finer craniofacial ROI analysis. The final dissertation uses the available low-resolution PD-DBS facial-image file as the empirical setting. Fine landmark-based analysis was adapted into eight coarse facial ROIs because the images are 32$\times$32 grayscale. Later clinical extension would use patient identifiers, outcome scores, and external validation. ROI low-level confound baselines, AEV size-normalization, pixel-occlusion ROI aggregation, YuNet automatic ROI checks, compact CNN modelling, and CNN Grad-CAM agreement were added after the main occlusion-based AEV workflow was established.
+
+
+\chapter{Data and Reproducibility Summary}
+
+This appendix consolidates the data checklist, machine-readable output sources, structured code layout, and output locations. The aim is to keep the appendix useful for assessment without repeating the same file inventory across several short appendices.
+
+
+\begin{table}[htbp]
+\centering
+\scriptsize
+\caption{Dataset and task summary}
+\begin{tabularx}{\textwidth}{>{\raggedright\arraybackslash}X>{\raggedright\arraybackslash}X}
+\toprule
+Item & Description \\
+\midrule
+Dataset file & \path{data/raw/PD_DBS_Data.mat} \\
+Arrays & \texttt{\detokenize{x_train}}, \texttt{\detokenize{x_test}}, \texttt{\detokenize{y_train}}, \texttt{\detokenize{y_test}} \\
+Image count & 2343 \\
+Split & 1172 train, 1171 test \\
+Image format & 32$\times$32 grayscale facial images \\
+Label convention & Class 0 = pre-DBS. Class 1 = supplied post-DBS label \\
+Metadata outside provided record & Patient identifiers, session identifiers, source-cohort details, acquisition protocol, original resolution, down-sampling history, clinical motor scores, DBS settings, medication timing \\
+\bottomrule
+\end{tabularx}
+\end{table}
+
+\begin{table}[htbp]
+\centering
+\scriptsize
+\caption{Reproducibility record}
+\begin{tabularx}{\textwidth}{>{\raggedright\arraybackslash}X>{\raggedright\arraybackslash}X>{\raggedright\arraybackslash}X}
+\toprule
+Area & Primary source or output & Purpose \\
+\midrule
+Structured outputs & \path{outputs/}, \path{models/baseline_mlp_numpy.npz} & Machine-readable sources for final reported numbers \\
+Reproduction guide & \path{main.py}, \path{RUN_REPRODUCTION.md} & Staged command dispatcher and rerun instructions \\
+Baseline model & \path{models/baseline_mlp_numpy.npz}, \path{outputs/baseline/metrics.json}, \path{outputs/baseline/predictions_test.csv} & Checkpoint, classification metrics, and prediction audit \\
+Data QC & \path{outputs/data_qc/duplicate_metrics.json}, \path{outputs/data_qc/similarity_threshold_sensitivity.csv}, \path{outputs/data_qc/global_statistics_baseline_metrics.json}, \path{outputs/data_qc/alignment_qc_summary.csv} & Duplicate, similarity-threshold, global-statistics, and alignment checks \\
+ROI low-level confound baseline & \path{outputs/lowlevel_roi_confound/metrics.json}, \path{outputs/lowlevel_roi_confound/lowlevel_roi_class_differences.csv} & Per-ROI intensity and texture baseline for confound context \\
+Calibration & \path{outputs/calibration/calibration_metrics.json}, \path{outputs/calibration/reliability_bins.csv} & Brier score, ECE, and reliability-bin audit \\
+ROI and AEV & \path{outputs/roi/coarse_roi_definitions.csv}, \path{outputs/aev/aev_test.csv}, \path{outputs/aev/roi_occlusion_size_normalized.csv}, \path{outputs/aev/roi_size_confound_metrics.json} & ROI definitions, per-image evidence vectors, and ROI-size sensitivity outputs \\
+Region-only validation & \path{outputs/aev/region_only_metrics.csv}, \path{outputs/aev/region_only_predictions.csv} & Independent ROI signal check \\
+Sensitivity analyses & \path{outputs/robustness/}, \path{outputs/sensitivity/}, \path{outputs/external/} & Multi-seed, perturbation, fixed-versus-YuNet, fill-strategy, and label-permutation checks \\
+Compact CNN and Grad-CAM & \path{outputs/gradcam_occlusion_overlap/} & Secondary image-model metrics and CNN explanation agreement \\
+\bottomrule
+\end{tabularx}
+\end{table}
+
+\begin{table}[htbp]
+\centering
+\scriptsize
+\caption{Structured code and entry-point map}
+\begin{tabularx}{\textwidth}{>{\raggedright\arraybackslash}X>{\raggedright\arraybackslash}X}
+\toprule
+Area & Files or package location \\
+\midrule
+Primary dispatcher & \path{main.py} \\
+Stage wrappers & \path{scripts/01_prepare_data_and_roi.py} to \path{scripts/06_make_figures.py} \\
+Data loading and inspection & \path{src/dbsface/data/} \\
+Baseline, calibration, ROI and AEV experiments & \path{src/dbsface/experiments/} \\
+Leakage, multi-seed, perturbation, and sensitivity checks & \path{src/dbsface/robustness/} \\
+Automatic ROI, compact CNN, and Grad-CAM checks & \path{src/dbsface/explain/} \\
+Figure generation & \path{src/dbsface/draw/} \\
+Document-build helpers & \path{src/dbsface/build/} \\
+\bottomrule
+\end{tabularx}
+\end{table}
+
+\chapter{Data and Model Card Summary}
+
+This appendix lists concise data and model-card items for the submitted artefacts. The format follows datasheet and model-card guidance \boxcite{gebru2021datasheets} \boxcite{mitchell2019modelcards}.
+
+
+\begin{table}[htbp]
+\centering
+\scriptsize
+\caption{Data and model summary}
+\begin{tabularx}{\textwidth}{>{\raggedright\arraybackslash}X>{\raggedright\arraybackslash}X}
+\toprule
+Item & Description \\
+\midrule
+Data type & Low-resolution grayscale facial images \\
+Main privacy risk & Facial data may be sensitive even at low resolution \\
+Model type & Dependency-light NumPy MLP with compact CNN secondary image model \\
+Output & \texttt{\detokenize{p_class1}} numeric probability \\
+Main use & Image-level classification and ROI evidence audit for the supplied Class 0/Class 1 labels \\
+Main explanation method & Occlusion-based AEV \\
+Additional checks & YuNet automatic ROI sensitivity, compact CNN metrics, and CNN Grad-CAM ROI agreement \\
+External use & Separately validated clinical datasets for DBS-state inference/classification and Face2Gene syndrome diagnosis \\
+\bottomrule
+\end{tabularx}
+\end{table}
+
+\begin{table}[htbp]
+\centering
+\scriptsize
+\caption{Reporting notes for submitted outputs}
+\begin{tabularx}{\textwidth}{>{\raggedright\arraybackslash}X>{\raggedright\arraybackslash}X}
+\toprule
+Item & Reporting note \\
+\midrule
+Label convention & Class 0 denotes pre-DBS. Class 1 denotes the supplied post-DBS label. \\
+Split & Results use the supplied train/test split. \\
+Resolution & The 32$\times$32 arrays support coarse ROI evidence at broad facial-region scale. \\
+AEV evidence & ROI scores are true-class confidence drops after masking. \\
+Grad-CAM & Compact CNN Grad-CAM ROI agreement. \\
+\bottomrule
+\end{tabularx}
+\end{table}
+

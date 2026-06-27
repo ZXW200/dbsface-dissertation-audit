@@ -1,0 +1,16 @@
+\section*{\centering Abstract}
+
+This dissertation develops a coarse region-of-interest (ROI) occlusion audit pipeline for low-resolution facial phenotyping. The empirical setting is a Parkinson's disease deep brain stimulation (PD-DBS) facial-image benchmark with supplied pre-/post-DBS labels, used to evaluate ROI-level explanation within the Explainable Face2Gene Diagnosis project theme.
+
+
+The dataset contains 2343 grayscale 32$\times$32 facial images, with 1172 in the original training split and 1171 in the test split. The project label convention is Class 0 for pre-DBS images and Class 1 for the supplied post-DBS label. The available metadata record covers image arrays and labels; patient, session, acquisition, and clinical outcome fields are outside that record. The analysis reports image-level classification, calibration, ROI evidence, and robustness audit.
+
+
+A dependency-light NumPy multilayer perceptron (MLP) baseline achieved 95.22\% accuracy, 94.73\% balanced accuracy, 0.9824 area under the receiver operating characteristic curve (AUROC), and 0.9767 area under the precision-recall curve (AUPRC) on the supplied image-level split. A compact convolutional neural network (CNN), trained as a secondary image model on the same supplied split, achieved 0.9951 AUROC. Additional audit found label-associated signal in global image statistics (AUROC 0.6095) and per-ROI low-level summaries (AUROC 0.7871).
+
+
+To support explainability, eight mutually exclusive coarse facial ROIs were defined at a scale matched to the image resolution. Occlusion-based Anatomical Evidence Vector (AEV) analysis treated each ROI score as a named-region model-output measurement. Supplied-split AEV found class-specific evidence differences after false discovery rate (FDR) correction and partial region-only signal. A size-normalized check showed that raw fixed-atlas rankings partly tracked ROI pixel count. Pixel-occlusion, YuNet automatic-ROI, and convolutional neural network (CNN) Grad-CAM checks added explanation-sensitivity evidence, with high same-CNN agreement and lower cross-method MLP-AEV agreement.
+
+
+The completed work demonstrates a feasible audit pipeline for converting facial-model behaviour into quantitative ROI-level evidence and identifies the metadata needed for later clinical interpretation.
+

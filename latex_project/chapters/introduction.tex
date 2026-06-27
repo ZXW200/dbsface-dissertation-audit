@@ -1,0 +1,92 @@
+
+\section{Background}
+
+Facial phenotyping is an important component of clinical assessment in genetics, neurology, developmental medicine, and movement-disorder research. Clinicians often use facial morphology, facial asymmetry, expressivity, and region-specific signs as part of a broader diagnostic reasoning process. In genetics, facial appearance can provide clues for syndromic conditions. In neurology, facial expression and reduced facial movement can reflect motor and affective state \boxcite{jankovic2008parkinsons} \boxcite{marsili2014hypomimia} \boxcite{novotny2022facialbradykinesia} \boxcite{abrami2021hypomimia}. Deep brain stimulation is an established treatment option for advanced Parkinson's disease, and motor impairment can be quantified using clinical and kinematic measures \boxcite{deuschl2006dbs} \boxcite{krack2003stn} \boxcite{weaver2009dbs} \boxcite{heldman2011automated}. These observations make facial images a potentially informative data source. They also create a difficult methodological problem: facial images are high-dimensional, sensitive, and clinically meaningful only when interpreted within a carefully defined context.
+
+
+Deep learning has changed the scale at which facial phenotype information can be analysed. Systems such as Face2Gene and DeepGestalt have shown that machine learning can extract signals from facial images that are relevant to genetic-disorder recognition \boxcite{gurovich2019deepgestalt}. This sits within a broader shift in medical AI, where deep learning has produced strong image-classification results across medical imaging domains \boxcite{lecun2015deep} \boxcite{litjens2017survey} \boxcite{esteva2017dermatologist} \boxcite{rajpurkar2017chexnet}. The significance of this line of work extends from image classification to computational representation of facial phenotype information. A model can in principle learn spatial patterns that are difficult to encode manually, such as interactions between the periocular region, midface, mouth, jaw, and global face shape. This is why facial AI has become attractive for diagnostic support, phenotype discovery, and triage \boxcite{topol2019highperformance} \boxcite{yu2018artificial}.
+
+
+Predictive performance alone is insufficient for medical facial AI. A classifier may achieve high test accuracy and rely on shortcuts such as background, image acquisition differences, pose, compression, lighting, or duplicate patient images across data splits \boxcite{geirhos2020shortcut} \boxcite{zech2018variable} \boxcite{roberts2021pitfalls} \boxcite{kapoor2023leakage} \boxcite{kelly2019key}. A model may also be poorly calibrated, producing probabilities misaligned with observed outcome frequencies \boxcite{brier1950verification} \boxcite{guo2017calibration} \boxcite{vancalster2019calibration}. In a clinical or research setting, these failure modes are serious because the output may be interpreted as medical evidence. For clinical and research use, useful models pair predictive performance with defined interpretation, calibrated confidence, reproducibility, and evidence that can be inspected by humans \boxcite{collins2015tripod} \boxcite{liu2020consortai} \boxcite{vasey2022decideai} \boxcite{mitchell2019modelcards} \boxcite{steyerberg2019clinical} \boxcite{sendak2020path}.
+
+
+The official project direction, Explainable Face2Gene Diagnosis, focuses on developing AI models for facial phenotype analysis with interpretable machine learning and explainable predictions. This dissertation follows that direction through explanation and auditability.
+
+
+The project follows the broader concept- and region-based explainability direction, where explanations are expressed as structured measurements that can be compared across samples \boxcite{kim2018tcav} \boxcite{koh2020concept} \boxcite{zeiler2014visualizing}. If occlusion evidence can be mapped into named facial regions, the output becomes an Anatomical Evidence Vector (AEV). This dissertation develops that idea for low-resolution PD-DBS facial images with supplied Class 0 and Class 1 labels.
+
+
+\section{Problem Statement}
+
+Most post-hoc visual explanations in facial AI are shown as pixel-level heatmaps. Heatmaps can be visually useful. Statistical comparison across samples, groups, and experiments remains difficult, and highlighted regions are stronger evidence when accompanied by functional testing \boxcite{zhou2016cam} \boxcite{selvaraju2017gradcam} \boxcite{sundararajan2017ig} \boxcite{adebayo2018sanity}.
+
+
+This creates a methodological gap: facial AI needs explanation formats that are region-aligned, quantitative, statistically testable, and compatible with calibration and robustness audit.
+
+
+There are three specific problems behind this gap. First, pixel-level explanations align poorly with clinical language. A clinician is more likely to reason in terms of periocular features, the nasal bridge, mouth region, cheek/zygomatic area, or chin/mandible region than isolated high-intensity pixels. Second, pixel-level heatmaps are difficult to aggregate. Two heatmaps may look similar by eye and differ statistically. Visually different heatmaps may also concentrate evidence in the same anatomical region. Third, many heatmaps leave faithfulness unresolved. They may show where an explanation method assigns importance. Perturbation is still needed to test whether that region changes model output.
+
+
+These problems are especially relevant for the present dataset. The available PD-DBS data are 32$\times$32 grayscale images. Fine-grained facial landmarks are unreliable at this scale. The images still contain recognisable facial structure. Broad coarse ROIs match the available facial detail and keep the interpretation proportional to image quality. The project uses named facial regions at this scale and validates them through occlusion and region-only testing.
+
+
+\section{Research Gap}
+
+Existing explainable facial AI studies often focus on saliency visualisation, but fewer short-cycle dissertation projects turn explanations into auditable statistical objects. A useful medical-AI explanation should make several questions answerable: whether the region matters for the output, whether the pattern differs across groups, whether the probability output is calibrated, and whether the result survives perturbation \boxcite{zeiler2014visualizing} \boxcite{fong2017meaningful} \boxcite{samek2017evaluating} \boxcite{hooker2019benchmark}.
+
+
+The gap addressed in this dissertation is therefore practical and methodological. Its goal is a constrained but complete evidence workflow: loading a facial dataset, training a baseline pre-/post-DBS label classifier, mapping model behaviour into facial regions, testing those regions statistically and functionally, assessing calibration, and checking leakage risk. The workflow is scoped to the supplied image-level benchmark.
+
+
+\section{Project Aim}
+
+This dissertation addresses the explainability component of the assigned PRJ17-LU-EFG (Explainable Face2Gene Diagnosis) brief. The PD-DBS facial benchmark serves as the available test case for developing the auditable evidence layer, and future Face2Gene syndrome work would use higher-resolution, clinically labelled data.
+
+
+This dissertation aims to develop and evaluate a coarse-ROI occlusion evidence pipeline that converts model behaviour into facial ROI-level evidence for explainable facial phenotyping toward Explainable Face2Gene Diagnosis.
+
+
+More specifically, the aim is to test whether a model trained on numeric facial labels can be interrogated through named coarse regions in a way that is quantitative, reproducible, and explicit about uncertainty. The framework is intended to be transferable: in a future higher-resolution and clinically documented dataset, the same evidence-vector logic could be applied to Face2Gene-like syndrome diagnosis or neurological facial-expression analysis. In this dissertation, the validation setting is the supplied image-level label task.
+
+
+\section{Objectives}
+
+The project objectives are:
+
+
+\begin{enumerate}
+\item Establish a pre-/post-DBS facial-image baseline using the available PD-DBS data.
+\item Implement a coarse named-ROI representation appropriate for 32$\times$32 grayscale images.
+\item Convert occlusion-based model behaviour into per-image AEV features.
+\item Evaluate AEV through class-specific statistics, mask-out analysis, region-only validation, calibration assessment, leakage checks, and robustness tests.
+\item Report interpretation scope alongside classification and explanation results.
+\end{enumerate}
+
+\section{Research Questions}
+
+The dissertation is organised around four research questions:
+
+
+\begin{enumerate}
+\item Can a lightweight numeric facial classifier be trained and evaluated reproducibly on the available PD-DBS image data?
+\item Can model behaviour be converted into a coarse named-region evidence vector despite the 32$\times$32 image resolution?
+\item Do occlusion-based AEV features show statistically distinguishable Class 0 versus Class 1 regional evidence patterns?
+\item Do mask-out, region-only, calibration, leakage, and perturbation checks support the AEV representation as a functional and auditable explanation?
+\end{enumerate}
+
+The first question establishes the predictive substrate. The second asks whether the representation can be constructed. The third evaluates whether the representation contains class-specific structure. The fourth addresses faithfulness and reliability.
+
+
+\section{Contribution}
+
+The main contribution is a practical, auditable pipeline for low-resolution facial phenotyping data. The project demonstrates that ROI-level evidence can be quantified, statistically compared, and functionally tested at 32$\times$32 resolution.
+
+
+There are three more specific contributions. First, the dissertation implements a dependency-light pipeline that can load a MATLAB facial dataset, train a NumPy classifier, export predictions, and compute metrics with a minimal local dependency set. Second, it defines mutually exclusive coarse facial ROIs matched to 32$\times$32 images. Third, it treats explanation as an empirical object by combining occlusion evidence, class-specific statistics, region-only validation, calibration, leakage sensitivity, and robustness analysis.
+
+
+\section{Chapter Outline}
+
+Chapter 2 reviews facial phenotyping AI, explainability in medical imaging, anatomy-aligned evidence, calibration, and region-based functional validation. Chapter 3 describes the dataset, baseline model, quality-control process, AEV construction, statistical testing, calibration metrics, robustness experiments, and the compact CNN Grad-CAM consistency check. Chapter 4 reports the results, including data QC, baseline classification, calibration, ROI definition, occlusion-based AEV, class-specific regional evidence, region-only validation, robustness, and Grad-CAM-to-ROI agreement. Chapter 5 discusses the methodological contribution, interpretation boundaries, study scope, and future extensions toward higher-resolution Explainable Face2Gene Diagnosis. Chapter 6 concludes the dissertation.
+
+

@@ -1,0 +1,126 @@
+\documentclass[oneside,12pt]{article}
+\usepackage[paper=a4paper,left=25mm,right=25mm,top=25mm,bottom=25mm,includeheadfoot]{geometry}
+\usepackage{fontspec}
+\usepackage{xeCJK}
+\IfFontExistsTF{Times New Roman}{\setmainfont{Times New Roman}}{\setmainfont{TeX Gyre Termes}}
+\IfFontExistsTF{SimSun}{\setCJKmainfont{SimSun}}{%
+  \IfFontExistsTF{Noto Serif CJK SC}{\setCJKmainfont{Noto Serif CJK SC}}{\setCJKmainfont{FandolSong-Regular}}%
+}
+\usepackage{graphicx}
+\usepackage{booktabs}
+\usepackage{tabularx}
+\usepackage{array}
+\usepackage{hyperref}
+\hypersetup{colorlinks=false,breaklinks=true,pdfborder={0 0 1}}
+\usepackage{setspace}
+\onehalfspacing
+\usepackage{caption}
+\captionsetup{font=footnotesize}
+
+\newcommand\thesistitle{Toward Explainable Face2Gene Diagnosis: A Coarse-ROI Occlusion Evidence Pipeline for Low-resolution Facial Phenotyping}
+\newcommand\authorname{Zixu Wang}
+
+\begin{document}
+
+\begin{center}
+{\Large\bfseries Project Specification\par}
+\vspace{0.3cm}
+{\bfseries \thesistitle\par}
+\vspace{0.25cm}
+\authorname\\
+School of Computing and Communications, Lancaster University\\
+Project period: 1 June 2026 to 1 September 2026
+\end{center}
+\vspace{0.2cm}
+
+\section*{Motivation}
+
+Facial images can contain clinically relevant phenotype information, but standard visual explanation outputs are often difficult to audit. A pixel-level heatmap may be useful as an illustration, while cross-image comparison and statistical summary need a structured reporting unit. This project was designed as a short-cycle MSc audit study to test whether model behaviour on low-resolution facial images can be converted into structured regional evidence.
+
+The project is aligned with the Explainable Face2Gene Diagnosis direction. The intended long-term problem is to make facial-model evidence inspectable, reproducible, and suitable for structured medical AI reporting. The completed project focuses on an occlusion-based Anatomical Evidence Vector (AEV) pipeline as a method-development step toward future facial diagnostic systems.
+
+\section*{Data}
+
+The data source is Face2Brain / PD-DBS face data. The working file used in this dissertation is \path{data/raw/PD_DBS_Data.mat}. It contains four arrays: \texttt{\detokenize{x_train}}, \texttt{\detokenize{x_test}}, \texttt{\detokenize{y_train}}, and \texttt{\detokenize{y_test}}. The file contains 2343 images in total, with 1172 images in the original training split and 1171 images in the original test split. Each image is represented as a 1024-dimensional vector corresponding to a $32\times32$ grayscale face image.
+
+The project uses the supplied label convention that Class 0 denotes pre-DBS images and Class 1 denotes the supplied post-DBS label. The working file provides image arrays and labels; patient identifiers, session identifiers, source-cohort details, acquisition protocol, original image resolution, down-sampling history, clinical motor scores, DBS settings, and medication timing are outside the provided metadata record. This data condition shaped the project scope. The dissertation evaluates image-level pre-/post-DBS label classification and explanation behaviour.
+
+\section*{Aims}
+
+The project had one main aim:
+
+\begin{quote}
+Develop and evaluate a reproducible coarse-ROI occlusion evidence pipeline for explainable facial phenotyping toward Explainable Face2Gene Diagnosis.
+\end{quote}
+
+This aim was divided into three practical objectives:
+
+\begin{enumerate}
+\item Establish a pre-/post-DBS baseline classifier on the supplied Face2Brain / PD-DBS working file.
+\item Define a low-resolution coarse facial ROI representation suitable for $32\times32$ grayscale images.
+\item Convert model behaviour into ROI-level AEV scores and evaluate those scores using statistical comparison, mask-out testing, ROI-size sensitivity, region-only validation, calibration assessment, leakage sensitivity, and robustness checks.
+\end{enumerate}
+
+\section*{Methods and Technical Plan}
+
+The project was implemented as a dependency-light Python pipeline. The main technical stages were:
+
+\begin{enumerate}
+\item load and inspect the MATLAB working file;
+\item reconstruct $32\times32$ grayscale images and verify orientation by smoke-test visualisation;
+\item train a NumPy MLP baseline and export per-sample predictions;
+\item evaluate accuracy, balanced accuracy, F1, AUROC, trapezoidal AUPRC, confusion matrix, and majority-class baseline;
+\item run duplicate, near-duplicate, similarity-threshold, global-statistics, ROI low-level, and coarse-alignment audits;
+\item evaluate Brier score, ECE, and reliability bins;
+\item define eight mutually exclusive coarse facial ROIs;
+\item compute occlusion-based AEV scores as true-class confidence drops;
+\item compare AEV distributions between numeric classes using effect sizes, permutation tests, FDR correction, and bootstrap confidence intervals;
+\item assess how raw fixed-atlas AEV rankings relate to ROI pixel count;
+\item run region-only validation and perturbation robustness checks.
+\end{enumerate}
+
+\section*{Timeline}
+
+\begin{table}[htbp]
+\centering
+\scriptsize
+\caption{Project specification timeline.}
+\begin{tabularx}{\textwidth}{>{\raggedright\arraybackslash}p{0.18\textwidth}>{\raggedright\arraybackslash}X>{\raggedright\arraybackslash}X}
+\toprule
+Period & Planned work & Main output \\
+\midrule
+Weeks 1--2 & Data access, loader, smoke test, baseline task definition & Data checklist and working loader \\
+Weeks 3--4 & Baseline model, prediction export, primary metrics & Baseline metrics and prediction files \\
+Weeks 5--6 & Leakage, similarity, calibration, and coarse-alignment audits & QC and calibration outputs \\
+Weeks 7--8 & Coarse ROI definition and occlusion-based AEV implementation & ROI masks and AEV tables \\
+Weeks 9--10 & Class-specific AEV statistics and region-only validation & Statistical and functional validation outputs \\
+Weeks 11--12 & Robustness checks, automatic ROI sensitivity, compact CNN, and Grad-CAM consistency & Sensitivity and agreement outputs \\
+Week 13 & Dissertation assembly, figure/table assembly, and submission package preparation & Final dissertation PDF and reproducibility package \\
+\bottomrule
+\end{tabularx}
+\end{table}
+
+\section*{Deliverables}
+
+The planned and completed deliverables were:
+
+\begin{itemize}
+\item a reproducible data-loading and inspection workflow;
+\item a pre-/post-DBS baseline classifier;
+\item machine-readable prediction, metric, calibration, QC, ROI, AEV, compact CNN, Grad-CAM, and robustness outputs;
+\item eight mutually exclusive coarse facial ROI masks;
+\item an occlusion-based AEV analysis with class-specific statistics and ROI-size sensitivity;
+\item region-only and perturbation-based functional validation;
+\item a final MSc dissertation;
+\item a structured submission package containing LaTeX source, scripts, structured outputs, and figures.
+\end{itemize}
+
+\section*{Changes from Original Scope}
+
+The original project direction included broader Face2Gene-style explainability and CNN-based Grad-CAM as possible extensions. During implementation, the project was developed into a reproducible occlusion-based AEV audit workflow, with compact CNN and Grad-CAM checks included as secondary image-model and explanation-sensitivity analyses.
+
+The original anatomical explanation idea was adapted to the available image resolution. Fine landmark-based 18-ROI segmentation was converted for the $32\times32$ grayscale setting into eight coarse, mutually exclusive facial ROIs with ROI-size sensitivity reporting. This change preserved the central evidence-vector idea and kept regional interpretation at a pixel-grid-appropriate scale.
+
+The final project contributes a reproducible audit and reporting pipeline showing how low-resolution facial model behaviour can be converted into ROI-level evidence and evaluated under explicit data conditions. Clinical DBS-state inference/classification, full Face2Gene syndrome diagnosis, and patient-level validation are reserved for later datasets with patient-level clinical evidence.
+
+\end{document}

@@ -1,0 +1,137 @@
+
+\section{Methodological Contribution}
+
+This dissertation demonstrates that model behaviour can be converted into auditable ROI-level evidence. The coarse-ROI AEV output supports statistical testing, mask-out validation, region-only analysis, calibration assessment, size-sensitivity assessment, and robustness audit \boxcite{selvaraju2017gradcam} \boxcite{adebayo2018sanity} \boxcite{kim2018tcav} \boxcite{zeiler2014visualizing}. In this dissertation, AEV is a named-region model-output measurement. Regional interpretation depends on the 32$\times$32 grid, fixed ROI geometry, ROI pixel count, and available metadata.
+
+
+The main methodological contribution is the integration of ROI occlusion, statistical comparison, low-level baselines, calibration, and robustness checks into one reproducible audit workflow. The completed pipeline reports explanation as a vector of coarse regions, which supports group comparison, effect size estimation, correction for multiple testing, robustness assessment, and explicit reporting conditions.
+
+
+The available data conditions shaped the design choices: eight coarse mutually exclusive ROIs, occlusion-based AEV as the main explanation method, a compact CNN as the secondary image model and Grad-CAM source, and Class 1 reported as the supplied post-DBS label.
+
+
+This gives a practical template for short-cycle explainable medical imaging studies. Occlusion sensitivity, ROI aggregation, calibration reporting, leakage sensitivity, and reporting scope can be assembled into one reproducible audit workflow \boxcite{zeiler2014visualizing} \boxcite{collins2015tripod} \boxcite{mitchell2019modelcards} \boxcite{steyerberg2019clinical}.
+
+
+\section{Functional Validation}
+
+Mask-out, pixel-occlusion, and region-only analyses show that ROI perturbations affected the trained numeric classifier. Occluding regions changed true-class confidence, pixel-level occlusion gave a lightweight comparator after ROI aggregation, and individual regions retained partial predictive information. The best region-only ROI exceeded majority baseline performance and remained below both full-face performance and the ROI low-level baseline, indicating partial local signal with measurable low-level regional confounding.
+
+
+Functional validation is central because visual plausibility alone is weak evidence for an explanation \boxcite{adebayo2018sanity} \boxcite{hooker2019benchmark}. In this dissertation, mask-out testing asks what happens when a named facial region is neutralised. Region-only testing asks what happens when only one named region is retained. These simple experiments directly test the relationship between region content and model output \boxcite{zeiler2014visualizing} \boxcite{samek2017evaluating}.
+
+
+The results show partial region-level sensitivity. The best region-only AUROC was 0.6988, below full-face performance. The ROI low-level baseline reached 0.7871 AUROC using regional intensity and texture summaries. Pixel-level occlusion aggregated into ROIs had moderate agreement with region-mask AEV.
+
+
+\section{Clinical Interpretation}
+
+The PD-DBS benchmark gives the audit a medical motivation. Exact duplicate, near-duplicate, similarity-threshold, global-statistics, ROI low-level, ROI-size, and YuNet checks show learnable signal mixed with acquisition, geometry, and low-level visual sensitivity.
+
+
+The PD facial-biomarker literature reviewed in Chapter 2 explains why facial expressivity matters in Parkinson's disease. Hypomimia and facial bradykinesia make facial behaviour a meaningful object of neurological measurement, and computer-vision studies show that facial movement can be quantified when task design and clinical labels are available \boxcite{marsili2014hypomimia} \boxcite{abrami2021hypomimia} \boxcite{novotny2022facialbradykinesia}. In this dissertation, the static low-resolution images support an audit layer for the available pre-/post-DBS image benchmark.
+
+
+For PD digital-biomarker research, the framework makes a facial classifier inspectable. It reports which broad facial regions change model confidence. It also reports retained-region signal, calibration, leakage sensitivity, and perturbation robustness. These outputs can inform the design of a higher-resolution, patient-level, clinically labelled PD study.
+
+
+The same logic is relevant to DBS research because pre-/post-treatment facial datasets can contain target-related, identity-like, acquisition-related, and expression-related signals at the same time. ROI-level audit helps organise possible sources of the high AUROC, including facial content, identity-like similarity, acquisition or framing effects, ROI-size effects, and expression-related variation. The ROI low-level baseline is part of that audit. Its 0.7871 AUROC shows that local brightness and texture summaries carry signal. Section 4.8 adds a block-wise comparison: the full-pixel MLP score increased nested out-of-fold AUROC from 0.7709 to 0.9752 when added to the 40 low-level ROI features.
+
+
+The mouth findings show the value of the audit. Hypomimia and facial bradykinesia motivate interest in facial expressivity. In the fixed atlas, the perioral/mouth ROI had the smallest raw AEV drop and the weakest region-only AUROC. YuNet dynamic AEV increased the mouth evidence drop. Mouth-region interpretation is geometry-sensitive in 32$\times$32 static images. A richer PD study would pair this analysis with clinical scores, controlled facial tasks, medication and stimulation metadata, and external validation.
+
+
+\section{Coarse ROI Rationale}
+
+The coarse ROI design responds to 32$\times$32 image resolution. It preserves the key AEV idea of converting model evidence into named facial regions at a scale that avoids false regional precision. In a high-resolution facial dataset, landmarks or face parsing could support more detailed craniofacial ROIs \boxcite{kazemi2014one} \boxcite{bulat2017far}.
+
+
+The eight-ROI design captures broad regions visible at low resolution: upper face, eyes, midface, cheeks, mouth, and chin/mandible. The masks are mutually exclusive, fixed to the pixel grid, and dependent on approximate face centring. Coarse alignment QC showed similar train/test centroids and broad face coverage. The provided record contained no landmark-level eye, nose, mouth, or jaw annotations. The ROI-size analysis further showed that raw mask-out rankings partly follow pixel count. The ROI results are coarse fixed-region model evidence.
+
+
+The YuNet sensitivity results clarify this trade-off. Automatic ROI boxes were feasible on the upsampled 32$\times$32 images and supported the right-cheek region-only result. Dynamic AEV shifted the occlusion ranking toward mouth and upper-brow regions. The mouth shift is an ROI-geometry sensitivity signal. The fixed atlas is used as the main reporting system because it is reproducible and shared across all images.
+
+
+\section{Compact CNN and Grad-CAM Handling}
+
+Grad-CAM estimates class-discriminative image regions from a CNN's internal activations and gradients \boxcite{selvaraju2017gradcam}. Occlusion measures output change after input perturbation \boxcite{zeiler2014visualizing}. In this dissertation, the compact CNN had two roles: a secondary image-model check and the source model for Grad-CAM.
+
+
+The compact CNN achieved 0.9951 AUROC on the supplied split, higher than the locked MLP AUROC of 0.9824. The CNN result shows that the supplied split signal also appears under a convolutional image model.
+
+
+The same-CNN comparison served as a sanity check: Grad-CAM projection and CNN occlusion evidence had strong ROI-level agreement (Spearman rho = 0.9524). Cross-model comparisons were lower: MLP-AEV versus CNN Grad-CAM gave rho = 0.7857, and MLP-AEV versus pixel-occlusion ROI aggregation gave rho = 0.3810 for ROI means and 0.6429 for ROI sums. These values separate within-CNN agreement from cross-method sensitivity in the explanation audit.
+
+
+\section{Study Boundaries}
+
+The main study boundaries are image-level labels, patient and clinical outcome fields outside the provided record, incomplete data provenance, possible subject/acquisition leakage, low image resolution, coarse fixed-ROI alignment, ROI-size sensitivity, a single locked MLP audit model, and external clinical validation reserved for later datasets.
+
+
+The first boundary is clinical outcome metadata. Class 0 and Class 1 follow the project convention of pre-DBS and supplied post-DBS labels. Clinical motor scores, stimulation settings, medication timing, and patient-level outcome data are outside the provided record.
+
+
+Source-cohort details, acquisition protocol, original image resolution, down-sampling history, camera information, site/session variables, and session identifiers are also outside the provided record. These provenance gaps shape interpretation of low-level intensity, texture, and framing effects.
+
+
+The second boundary is patient identity and session structure. The supplied split is verified at image level; patient-independent verification belongs to a dataset with patient identifiers. Duplicate, near-duplicate, and similarity-threshold checks assess obvious image-level similarity. Same-subject images across train and test could inflate the original 0.9824 AUROC. A patient-level split would address repeated-subject leakage. Paired pre-/post session metadata would help separate DBS state from acquisition session, camera, lighting, compression, and date effects.
+
+
+The third boundary is resolution and alignment. The 32$\times$32 grayscale images support coarse regional analysis and restrict regional precision. Fixed ROIs assume approximate face centring. Coarse centroid QC supports this assumption at a broad level. YuNet sensitivity checks quantify how ROI geometry affects region-only validation and occlusion evidence, with the largest practical change around the mouth.
+
+
+The fourth boundary is model architecture. The MLP is the locked audit model. The compact CNN achieved stronger image-level AUROC and provides architecture-sensitivity evidence. The strongest Grad-CAM agreement is within the CNN. MLP-versus-CNN comparisons quantify how ROI rankings change across model class and explanation mechanism.
+
+
+The fifth boundary is external validation. The framework was tested on one local dataset. Additional facial phenotype datasets with documented labels, patient IDs, higher resolution, and external splits would determine generalisation.
+
+
+\section{Calibration, Thresholds, and Evidence Magnitudes}
+
+Calibration affects the interpretation of AEV because the evidence score is a confidence drop. If a model is severely overconfident, a region's evidence drop may appear large or small for reasons related to probability distortion. Reporting Brier score, ECE, and reliability bins supports the interpretation of the confidence values used in occlusion analysis \boxcite{brier1950verification} \boxcite{guo2017calibration}.
+
+
+The current model showed acceptable split-specific calibration by Brier score and binned ECE. Future work should consider calibration before and after temperature scaling, subgroup calibration, and calibration drift under image-quality perturbations \boxcite{guo2017calibration}.
+
+
+Threshold choice also affects results such as confusion matrices and F1 score. AUROC and AUPRC are threshold-independent. Accuracy and F1 are threshold-specific. In future validation studies, thresholds should be selected on validation data according to intended use and then tested under external or patient-level validation \boxcite{steyerberg2019clinical}. In this dissertation, threshold-based metrics are reported for the supplied pre-/post-DBS label task.
+
+
+\section{Relationship to Explainable Face2Gene Diagnosis}
+
+This work contributes to the Explainable Face2Gene Diagnosis theme by formalising a transferable ROI-evidence layer for facial models. In a Face2Gene-style syndrome dataset, the same pipeline could be applied after replacing the coarse 32$\times$32 atlas with a landmark- or parsing-based craniofacial atlas and validating the model under patient-level and external splits \boxcite{ferry2014gestalt} \boxcite{gurovich2019deepgestalt} \boxcite{hsieh2022gestaltmatcher}.
+
+
+A concrete migration protocol would define the craniofacial atlas, train a syndrome or phenotype classifier with patient-level splits and external validation, compute AEV scores for candidate diagnoses or phenotype classes, compare ROI evidence with clinician-defined dysmorphology concepts, and report calibration, subgroup performance, governance, and failure cases. This preserves the school project direction and uses the PD-DBS experiment as the available dataset.
+
+
+\section{Governance and Reporting Value}
+
+A practical benefit of AEV is that it can be reported in structured form. The project can output ROI definitions, evidence tables, class-comparison statistics, calibration summaries, robustness results, and reporting scope. These artefacts are useful for governance because they document what the model used and how the explanation was tested.
+
+
+For sensitive facial data, governance also includes privacy and intended-use boundaries. Raw images may have sharing restrictions. Code, synthetic examples, ROI definitions, and aggregate plots may be easier to release. Future work should include a formal data card and model card that specify data access, privacy controls, intended use, restricted use, and failure modes \boxcite{gebru2021datasheets} \boxcite{mitchell2019modelcards}.
+
+
+\section{Positioning Relative to Region-Based XAI}
+
+The dissertation is most closely related to public concept- and region-based XAI work because it treats explanation as a human-auditable representation of model behaviour \boxcite{kim2018tcav} \boxcite{koh2020concept} \boxcite{zeiler2014visualizing} \boxcite{petsiuk2018rise}. It extends this direction by implementing an occlusion-based evidence vector for 32$\times$32 facial images and auditing it with leakage, calibration, ROI sensitivity, and robustness checks.
+
+
+The dissertation is also related to broader region-based perturbation logic in image models. The methodological idea is to divide the input into meaningful regions, perturb or isolate those regions, and measure the effect on model output \boxcite{zeiler2014visualizing} \boxcite{samek2017evaluating} \boxcite{petsiuk2018rise}. This dissertation applies that logic to coarse facial ROIs.
+
+
+The current work provides a reproducible workflow for low-resolution facial evidence audit. Its MSc contribution is the completed evidence workflow: data loading, baseline modelling, ROI construction, AEV extraction, low-level confound baselines, pixel-occlusion comparison, functional validation, calibration reporting, leakage sensitivity, and robustness assessment.
+
+
+\section{Future Work}
+
+Three extensions follow naturally from this dissertation. First, a richer PD/DBS dataset could add patient identifiers, session metadata, clinical motor scores, medication timing, stimulation state, and acquisition records. These fields would support patient-level splits, paired pre-/post analysis, and comparison with measured facial bradykinesia or hypomimia scores \boxcite{heldman2011automated} \boxcite{novotny2022facialbradykinesia}.
+
+
+Second, higher-resolution images or video would allow a more detailed craniofacial atlas. Landmark detection, face parsing, and stronger CNN models could then be evaluated alongside occlusion-based AEV and CAM-based explanations \boxcite{kazemi2014one} \boxcite{bulat2017far} \boxcite{selvaraju2017gradcam} \boxcite{wang2020scorecam}.
+
+
+Third, the same reporting structure could be tested in the original Explainable Face2Gene Diagnosis setting using documented syndrome labels, prediction scores, calibration summaries, and ROI evidence profiles.
+
+

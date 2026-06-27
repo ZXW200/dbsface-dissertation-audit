@@ -1,0 +1,130 @@
+\documentclass[oneside,12pt]{report}
+\usepackage[paper=a4paper,left=25mm,right=25mm,top=25mm,bottom=25mm,includeheadfoot]{geometry}
+\usepackage{fontspec}
+\usepackage{xeCJK}
+\IfFontExistsTF{Times New Roman}{\setmainfont{Times New Roman}}{\setmainfont{TeX Gyre Termes}}
+\IfFontExistsTF{SimSun}{\setCJKmainfont{SimSun}}{%
+  \IfFontExistsTF{Noto Serif CJK SC}{\setCJKmainfont{Noto Serif CJK SC}}{\setCJKmainfont{FandolSong-Regular}}%
+}
+\usepackage{graphicx}
+\usepackage{float}
+\usepackage{booktabs}
+\usepackage{tabularx}
+\usepackage{array}
+\usepackage{xcolor}
+\usepackage{hyperref}
+\hypersetup{hidelinks,breaklinks=true}
+\setcounter{secnumdepth}{4}
+\setcounter{tocdepth}{4}
+\hyphenpenalty=5000
+\tolerance=1000
+\emergencystretch=3em
+\sloppy
+\usepackage{setspace}
+\onehalfspacing
+\usepackage{amsmath}
+\usepackage{amssymb}
+\usepackage{subcaption}
+\usepackage{caption}
+\captionsetup{font=footnotesize}
+\makeatletter
+\setlength{\@fptop}{0pt}
+\setlength{\@fpsep}{8pt plus 1fil}
+\setlength{\@fpbot}{0pt plus 1fil}
+\renewcommand{\@makechapterhead}[1]{%
+  \vspace*{18pt}%
+  {\parindent \z@ \raggedright \normalfont
+    \ifnum \c@secnumdepth >\m@ne
+      \huge\bfseries \@chapapp\space \thechapter
+      \par\nobreak
+      \vskip 14pt
+    \fi
+    \Huge \bfseries #1\par\nobreak
+    \vskip 24pt
+  }%
+}
+\renewcommand{\@makeschapterhead}[1]{%
+  \vspace*{18pt}%
+  {\parindent \z@ \raggedright
+    \normalfont
+    \Huge \bfseries #1\par\nobreak
+    \vskip 24pt
+  }%
+}
+\makeatother
+\usepackage[style=authoryear,backend=biber,url=true,doi=true,sorting=nyt,natbib=true,hyperref=false]{biblatex}
+\addbibresource{ref.bib}
+\definecolor{citationblue}{RGB}{28,84,170}
+\newcommand{\boxcite}[1]{\begingroup\setlength{\fboxsep}{1.2pt}\textcolor{citationblue}{\fbox{\textcolor{black}{\parencite{#1}}}}\endgroup}
+\usepackage[title,titletoc]{appendix}
+\renewcommand{\appendixpagename}{Appendix}
+\usepackage{datetime}
+\newdateformat{monthyeardate}{\monthname[\THEMONTH], \THEYEAR}
+\newcommand\thesistitle{Toward Explainable Face2Gene Diagnosis: A Coarse-ROI Occlusion Evidence Pipeline for Low-resolution Facial Phenotyping}
+\newcommand\authorname{Zixu Wang}
+\newcommand\supervisor{Dr. Richard Jiang}
+\usepackage{fancyhdr}
+\setlength{\headheight}{15pt}
+\fancypagestyle{preamble}{%
+  \fancyhf{}
+  \fancyfoot[C]{\thepage}
+  \renewcommand{\headrulewidth}{0pt}
+  \renewcommand{\footrulewidth}{0pt}
+}
+\pagestyle{preamble}
+\fancypagestyle{main}{%
+  \fancyhf{}
+  \fancyfoot[C]{\thepage}
+  \fancyhead[L]{\textit{\nouppercase{\leftmark}}}
+  \fancyhead[R]{\textit{\nouppercase{\rightmark}}}
+  \renewcommand{\headrulewidth}{1pt}
+  \renewcommand{\footrulewidth}{0pt}
+}
+\fancypagestyle{plain}{%
+  \fancyhf{}
+  \fancyfoot[C]{\thepage}
+  \renewcommand{\headrulewidth}{0pt}
+  \renewcommand{\footrulewidth}{0pt}
+}
+
+\begin{document}
+\pagenumbering{roman}
+\input{title_page}
+\clearpage
+\input{declaration}
+\clearpage
+\input{abstract}
+\clearpage
+\input{acknowledgements}
+\clearpage
+\tableofcontents
+\clearpage
+\listoffigures
+\clearpage
+\listoftables
+\clearpage
+\pagestyle{main}
+\pagenumbering{arabic}
+
+\chapter{Introduction}
+\input{chapters/introduction}
+\chapter{Literature Review}
+\input{chapters/literature_review}
+\chapter{Methods}
+\input{chapters/methods}
+\chapter{Results}
+\input{chapters/results}
+\chapter{Discussion}
+\input{chapters/discussion}
+\chapter{Conclusion}
+\input{chapters/conclusion}
+
+\clearpage
+\printbibliography[heading=bibintoc,title=References]
+
+\clearpage
+\begin{appendices}
+\input{appendix/appendices}
+\end{appendices}
+
+\end{document}
