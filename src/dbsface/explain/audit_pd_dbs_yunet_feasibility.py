@@ -2,7 +2,7 @@
 
 The original PD-DBS dataset already contains low-resolution 32x32 grayscale face
 crops. This script upsamples those crops, runs OpenCV YuNet face detection, and
-writes a feasibility report plus visual QC sheets. It does not replace the
+and writes a feasibility report plus visual QC sheets alongside the
 fixed ROI atlas; it tests whether detector-driven ROIs are technically viable.
 """
 
@@ -221,7 +221,7 @@ def main() -> int:
         f"- Detection fraction by label: {summary['detected_by_label']}",
         f"- Median detected score: {summary['median_score_detected']:.3f}",
         "",
-        "Interpretation: if detection is sparse or visually unstable, the original fixed ROI atlas should remain the primary method for the 32x32 DBS dataset. Detector-driven ROIs are better suited to the higher-resolution YouTubePD raw-video extraction.",
+        "Interpretation: detector reliability on the 32x32 PD-DBS images determines whether detector-driven ROIs can support the fixed ROI analysis.",
         "",
         "QC files:",
         "- `qc_detected_examples.jpg`",

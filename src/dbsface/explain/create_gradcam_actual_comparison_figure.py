@@ -3,7 +3,7 @@
 The figure deliberately separates two things:
 
 * single-image visual sanity checks, shown as original / Grad-CAM / fixed ROI
-  AEV / YuNet automatic ROI AEV for the same test image; and
+  AEV / YuNet automatic ROI AEV for the same test image, and
 * full-test-set ROI agreement metrics, reported as compact text.
 
 This avoids treating an individual heatmap as the quantitative result.
@@ -19,22 +19,25 @@ import matplotlib.pyplot as plt
 import numpy as np
 import pandas as pd
 
-sys.path.append(str(Path(__file__).resolve().parent))
-from load_pd_dbs import load_pd_dbs
+try:
+    from dbsface.data.load_pd_dbs import load_pd_dbs
+except ImportError:  # pragma: no cover - supports direct script execution
+    sys.path.append(str(Path(__file__).resolve().parents[1] / "data"))
+    from load_pd_dbs import load_pd_dbs
 
 
 SAMPLE_IDS = ["test_0508", "test_0856"]
 
 
 ROI_SHORT_NAMES = {
-    "upper_brow_forehead": "upper brow",
-    "left_periocular": "left eye",
-    "right_periocular": "right eye",
+    "upper_brow_forehead": "upper brow/forehead",
+    "left_periocular": "left periocular",
+    "right_periocular": "right periocular",
     "nasal_midface": "nasal midface",
-    "left_cheek_zygomatic": "left cheek",
-    "right_cheek_zygomatic": "right cheek",
-    "perioral_mouth": "mouth",
-    "chin_mandible": "chin",
+    "left_cheek_zygomatic": "left cheek/zygomatic",
+    "right_cheek_zygomatic": "right cheek/zygomatic",
+    "perioral_mouth": "perioral/mouth",
+    "chin_mandible": "chin/mandible",
 }
 
 
@@ -92,7 +95,7 @@ def dynamic_roi_map_for_sample(
 
 def add_image_axis(ax: plt.Axes, title: str | None = None) -> None:
     if title:
-        ax.set_title(title, fontsize=11, pad=6, color="#142b4a", fontweight="bold")
+        ax.set_title(title, fontsize=11.5, pad=6, color="#142b4a", fontweight="bold")
     ax.set_xticks([])
     ax.set_yticks([])
     for spine in ax.spines.values():
@@ -117,13 +120,13 @@ def main() -> int:
     yunet_boxes = pd.read_csv("outputs/external/pd_dbs_yunet_region_only/yunet_roi_boxes.csv")
     yunet_boxes = yunet_boxes.loc[yunet_boxes["split"] == "test"].copy()
 
-    fig_height = 4.2 + 2.25 * len(SAMPLE_IDS)
-    fig = plt.figure(figsize=(12.2, fig_height), dpi=180, facecolor="white")
+    fig_height = 3.0 + 2.3 * len(SAMPLE_IDS)
+    fig = plt.figure(figsize=(9.2, fig_height), dpi=180, facecolor="white")
     gs = fig.add_gridspec(
         nrows=len(SAMPLE_IDS) + 2,
         ncols=4,
-        height_ratios=[0.42, *([1] * len(SAMPLE_IDS)), 0.55],
-        hspace=0.54,
+        height_ratios=[0.80, *([1] * len(SAMPLE_IDS)), 1.00],
+        hspace=0.82,
         wspace=0.14,
     )
 
@@ -131,20 +134,25 @@ def main() -> int:
     title_ax.axis("off")
     title_ax.text(
         0.0,
-        0.72,
-        "Actual test-image comparison",
-        fontsize=19,
+        0.96,
+        "Test-image comparison",
+        fontsize=17,
         fontweight="bold",
         color="#142b4a",
         transform=title_ax.transAxes,
+        va="top",
     )
     title_ax.text(
         0.0,
-        0.08,
-        "Rows show the same 32x32 test image across columns. Grad-CAM, fixed-ROI occlusion, and YuNet-ROI occlusion all use the same CNN.\nClass 0 = pre-DBS; Class 1 = post-DBS label.",
-        fontsize=10.2,
+        0.56,
+        "Rows show the same 32\u00d732 test image across columns. All explanations use the same CNN.\n"
+        "Grad-CAM is compared with fixed-atlas and YuNet-derived ROI occlusion.\n"
+        "Class 0 = pre-DBS. Class 1 = post-DBS.",
+        fontsize=10.8,
         color="#536174",
         transform=title_ax.transAxes,
+        va="top",
+        linespacing=1.15,
     )
 
     for row_idx, sample_id in enumerate(SAMPLE_IDS, start=1):
@@ -171,12 +179,13 @@ def main() -> int:
         add_image_axis(ax0, "Original" if row_idx == 1 else None)
         ax0.text(
             0.02,
-            -0.18,
-            f"{sample_id} | Class {int(y_test[test_idx])} | p(Class 1)={float(pred_row['p_class1']):.2f}",
+            -0.06,
+            f"{sample_id} | Class {int(y_test[test_idx])}\np(Class 1)={float(pred_row['p_class1']):.2f}",
             transform=ax0.transAxes,
-            fontsize=8.6,
+            fontsize=10.5,
             color="#142b4a",
             ha="left",
+            va="top",
         )
 
         ax1 = fig.add_subplot(gs[row_idx, 1])
@@ -185,12 +194,13 @@ def main() -> int:
         add_image_axis(ax1, "Grad-CAM (CNN)" if row_idx == 1 else None)
         ax1.text(
             0.02,
-            -0.18,
-            f"top ROI: {ROI_SHORT_NAMES.get(top_cam_roi, top_cam_roi)} ({top_cam_fraction:.2f})",
+            -0.06,
+            f"top ROI:\n{ROI_SHORT_NAMES.get(top_cam_roi, top_cam_roi)}\nenergy={top_cam_fraction:.2f}",
             transform=ax1.transAxes,
-            fontsize=8.6,
+            fontsize=10.2,
             color="#536174",
             ha="left",
+            va="top",
         )
 
         ax2 = fig.add_subplot(gs[row_idx, 2])
@@ -198,30 +208,32 @@ def main() -> int:
         ax2.imshow(roi_map, cmap="Reds", interpolation="nearest", alpha=np.clip(0.05 + 0.58 * roi_map, 0.0, 0.62))
         top_mask = masks[int(occ_sample.loc[occ_sample["roi_name"] == top_occ_roi, "roi_index"].iloc[0]) - 1]
         ax2.contour(top_mask.astype(float), levels=[0.5], colors=["#00d0ff"], linewidths=1.15)
-        add_image_axis(ax2, "Fixed ROI occ. (CNN)" if row_idx == 1 else None)
+        add_image_axis(ax2, "Fixed-atlas ROI\nocclusion (CNN)" if row_idx == 1 else None)
         ax2.text(
             0.02,
-            -0.18,
-            f"top ROI: {ROI_SHORT_NAMES.get(top_occ_roi, top_occ_roi)} (drop={top_occ_drop:.2f})",
+            -0.06,
+            f"top ROI:\n{ROI_SHORT_NAMES.get(top_occ_roi, top_occ_roi)}\ndrop={top_occ_drop:.2f}",
             transform=ax2.transAxes,
-            fontsize=8.6,
+            fontsize=10.2,
             color="#536174",
             ha="left",
+            va="top",
         )
 
         ax3 = fig.add_subplot(gs[row_idx, 3])
         ax3.imshow(raw, cmap="gray", interpolation="nearest", vmin=0, vmax=1)
         ax3.imshow(yunet_map, cmap="Blues", interpolation="nearest", alpha=np.clip(0.05 + 0.58 * yunet_map, 0.0, 0.62))
         ax3.contour(top_yunet_mask.astype(float), levels=[0.5], colors=["#00d0ff"], linewidths=1.15)
-        add_image_axis(ax3, "YuNet ROI occ. (CNN)" if row_idx == 1 else None)
+        add_image_axis(ax3, "YuNet-derived ROI\nocclusion (CNN)" if row_idx == 1 else None)
         ax3.text(
             0.02,
-            -0.18,
-            f"top ROI: {ROI_SHORT_NAMES.get(top_yunet_roi, top_yunet_roi)} (drop={top_yunet_drop:.2f})",
+            -0.06,
+            f"top ROI:\n{ROI_SHORT_NAMES.get(top_yunet_roi, top_yunet_roi)}\ndrop={top_yunet_drop:.2f}",
             transform=ax3.transAxes,
-            fontsize=8.6,
+            fontsize=10.2,
             color="#536174",
             ha="left",
+            va="top",
         )
 
     bottom_ax = fig.add_subplot(gs[len(SAMPLE_IDS) + 1, :])
@@ -248,30 +260,33 @@ def main() -> int:
     fixed_yunet_top3_overlap = len(fixed_yunet_top3 & yunet_top3)
     bottom_ax.text(
         0.0,
-        0.72,
+        0.88,
         "Full test-set ROI agreement",
-        fontsize=12,
+        fontsize=12.5,
         fontweight="bold",
         color="#142b4a",
         transform=bottom_ax.transAxes,
     )
     bottom_ax.text(
         0.0,
-        0.25,
+        0.62,
         (
-            f"Fixed ROI Grad-CAM/occlusion agreement: CNN AUROC={metrics['cnn_test_auroc']:.4f}; ROI Spearman="
-            f"{metrics['roi_spearman_rank_correlation']:.4f}; top-1 match="
-            f"{'Yes' if metrics['top1_match'] else 'No'}; top-3 overlap="
-            f"{metrics['top3_overlap_count']}/3 ({top_roi_text}).\n"
-            f"Same-CNN fixed-vs-YuNet occlusion: ROI Spearman={fixed_yunet_spearman:.4f}; "
-            f"top-3 overlap={fixed_yunet_top3_overlap}/3. Image rows are qualitative examples; metrics use full-test ROI aggregation."
+            f"Same-CNN Grad-CAM vs fixed-atlas occlusion: CNN AUROC={metrics['cnn_test_auroc']:.4f}; "
+            f"ROI Spearman={metrics['roi_spearman_rank_correlation']:.4f}.\n"
+            f"Top-1 match={'Yes' if metrics['top1_match'] else 'No'}; top-3 overlap="
+            f"{metrics['top3_overlap_count']}/3: {top_roi_text}.\n"
+            f"Fixed-atlas vs YuNet-derived occlusion: ROI Spearman={fixed_yunet_spearman:.4f}; "
+            f"top-3 overlap={fixed_yunet_top3_overlap}/3.\n"
+            "All agreement metrics use full-test ROI aggregation."
         ),
-        fontsize=9.2,
+        fontsize=10.5,
         color="#536174",
         transform=bottom_ax.transAxes,
+        va="top",
+        linespacing=1.22,
     )
 
-    out_path = Path("figures/dissertation/fig_gradcam_occlusion_overlap.png")
+    out_path = Path("latex_project/figures/dissertation/fig_gradcam_occlusion_overlap.png")
     out_path.parent.mkdir(parents=True, exist_ok=True)
     fig.savefig(out_path, bbox_inches="tight", pad_inches=0.12)
     plt.close(fig)
