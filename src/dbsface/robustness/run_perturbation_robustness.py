@@ -173,7 +173,7 @@ def main() -> int:
     md = [
         "# Perturbation Robustness Summary",
         "",
-        "Model: NumPy MLP. Labels: Class 0 = pre-DBS; Class 1 = post-DBS label.",
+        "Model: NumPy MLP. Class 0 = pre-DBS; Class 1 = post-DBS.",
         "",
         "## Performance Under Perturbation",
         "",

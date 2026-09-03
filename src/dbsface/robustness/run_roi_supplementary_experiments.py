@@ -600,7 +600,7 @@ def make_markdown_summary(
     md = [
         "# Supplementary ROI Sensitivity Experiments",
         "",
-        "Class convention: Class 0 = pre-DBS; Class 1 = post-DBS label. These analyses are image-level sensitivity and negative-control checks.",
+        "Class 0 represents pre-DBS images and Class 1 represents post-DBS images. These analyses are image-level sensitivity and negative-control checks.",
         "",
         "## 1. Bootstrap CI: fixed vs YuNet ROI",
         "",

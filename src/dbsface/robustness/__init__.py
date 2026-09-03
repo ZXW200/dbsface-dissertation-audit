@@ -1,1 +1,1 @@
-"""Leakage, stability, perturbation, and sensitivity analyses."""
+"""Similarity, stability, perturbation, and sensitivity analyses."""

@@ -104,7 +104,7 @@ def main() -> int:
         "",
         f"Seeds: {', '.join(map(str, seeds))}",
         "",
-        "Model: NumPy MLP. Labels: Class 0 = pre-DBS; Class 1 = post-DBS label.",
+        "Model: NumPy MLP. Class 0 = pre-DBS; Class 1 = post-DBS.",
         "This combines seed-dependent train/validation splits with model initialisation variability.",
         "",
         "| Metric | Mean | SD | Min | Max |",
