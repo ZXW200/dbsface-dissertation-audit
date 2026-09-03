@@ -1,7 +1,18 @@
-# Python runtime for the reproducible audit package
-numpy
-pandas
-Pillow
-matplotlib
-opencv-python
+# Python runtime for the reproducible audit package.
+#
+# Pins are the versions present during package verification on Windows with
+# Python 3.13. main.py adds src/ to the import path, so the package itself does
+# not need to be installed.
+
+numpy==2.2.6
+pandas==2.3.3
+Pillow==12.2.0
+matplotlib==3.10.7
+opencv-python==4.13.0.92
+scipy==1.15.3
+scikit-learn==1.7.2
+
+# Verified with torch 2.9.1+cu128, the CUDA 12.8 build installed from the
+# PyTorch package index. That tagged wheel is not on PyPI, so torch is left
+# unpinned here; the CPU build runs every analysis in this package.
 torch
