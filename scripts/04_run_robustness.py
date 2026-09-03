@@ -1,4 +1,4 @@
-"""Run leakage, multi-seed, perturbation, and ROI sensitivity checks."""
+"""Run similarity, multi-seed, perturbation, and ROI sensitivity checks."""
 
 from __future__ import annotations
 
