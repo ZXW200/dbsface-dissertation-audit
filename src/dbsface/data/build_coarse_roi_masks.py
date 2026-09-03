@@ -1,4 +1,4 @@
-"""Build 8 coarse fixed-ROI masks for 32x32 PD-DBS face images."""
+"""Build eight coarse fixed-ROI masks for 32 x 32 PD-DBS face images."""
 
 from __future__ import annotations
 
@@ -24,6 +24,17 @@ ROI_DEFS = [
     ("perioral_mouth", "Perioral / mouth region", 24, 28, 8, 24),
     ("chin_mandible", "Chin / mandible region", 28, 32, 6, 26),
 ]
+
+ROI_DISPLAY_NAMES = {
+    "upper_brow_forehead": "Upper brow/forehead",
+    "left_periocular": "Left periocular",
+    "right_periocular": "Right periocular",
+    "nasal_midface": "Nasal midface",
+    "left_cheek_zygomatic": "Left cheek/zygomatic",
+    "right_cheek_zygomatic": "Right cheek/zygomatic",
+    "perioral_mouth": "Perioral/mouth",
+    "chin_mandible": "Chin/mandible",
+}
 
 COLORS = [
     (230, 70, 70),
@@ -117,7 +128,8 @@ def main() -> int:
         y = 38 + idx * 28
         color = COLORS[idx]
         draw.rectangle([overlay.width + 12, y, overlay.width + 28, y + 16], fill=color)
-        draw.text((overlay.width + 36, y), f"{idx+1}. {row['roi_name']}", fill=(0, 0, 0))
+        display_name = ROI_DISPLAY_NAMES.get(row["roi_name"], row["roi_name"])
+        draw.text((overlay.width + 36, y), f"{idx+1}. {display_name}", fill=(0, 0, 0))
     canvas.save(out_dir / "coarse_roi_overlay_examples.png")
 
     table_lines = [
@@ -132,7 +144,7 @@ def main() -> int:
     summary = [
         "# Coarse ROI Masks",
         "",
-        "These 8 mutually exclusive coarse ROIs are designed for the 32x32 grayscale images where fine landmark-based 18-ROI extraction is not reliable.",
+        "These eight mutually exclusive coarse ROIs provide broad region coverage for the 32\u00d732 grayscale images.",
         "",
         *table_lines,
     ]

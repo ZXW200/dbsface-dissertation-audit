@@ -1,4 +1,4 @@
-"""Check exact and near-duplicate leakage between the provided train/test splits."""
+"""Check exact and near-duplicate overlap across the provided train/test splits."""
 
 from __future__ import annotations
 
@@ -135,12 +135,12 @@ def main() -> int:
 
     conclusion = "No exact train-test duplicate pairs were found."
     if summary["exact_duplicate_pairs"]:
-        conclusion = "Exact train-test duplicate pairs were found and must be treated as leakage risk."
+        conclusion = "Exact train-test duplicate pairs were found and require exclusion sensitivity analysis."
     elif summary["near_mse_pairs"] or summary["near_cosine_pairs"]:
         conclusion = "No exact duplicates were found, but near-duplicate risk remains under the configured thresholds."
 
     md = [
-        "# Train-Test Duplicate / Leakage QC",
+        "# Train-Test Duplicate and Similarity QC",
         "",
         f"Data file: `{Path(args.data).resolve()}`",
         "",

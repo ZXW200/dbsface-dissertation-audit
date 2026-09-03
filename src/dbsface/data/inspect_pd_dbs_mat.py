@@ -180,9 +180,13 @@ def main() -> int:
             counts = dict(sorted(Counter(decoded.tolist()).items()))
             print(f"  label_counts={counts}")
 
-    has_patient_id = any("patient" in key.lower() or "id" in key.lower() for key in variables)
+    identifier_names = {"id", "ids", "identifier", "identifiers", "record_id", "record_ids", "case_id", "case_ids"}
+    has_identifier_field = any(
+        key.lower() in identifier_names or key.lower().endswith(("_id", "_ids"))
+        for key in variables
+    )
     print(f"total_images: {total_images}")
-    print(f"patient_ids_present: {has_patient_id}")
+    print(f"identifier_fields_present: {has_identifier_field}")
     return 0
 
 
