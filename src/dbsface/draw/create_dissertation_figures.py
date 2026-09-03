@@ -1,4 +1,4 @@
-"""Create dissertation figures from frozen CSV/PNG outputs without new analysis."""
+"""Create dissertation figures from frozen CSV/PNG outputs."""
 
 from __future__ import annotations
 
@@ -182,19 +182,19 @@ def pipeline_schematic(output: Path) -> None:
     text(
         draw,
         (60, 88),
-        "The dissertation converts pre-/post-DBS facial-model behaviour into auditable ROI-level evidence.",
+        "The dissertation converts pre- and post-DBS facial-model behaviour into auditable ROI-level evidence.",
         22,
         fill=PALETTE["gray"],
     )
     boxes = [
-        ("PD-DBS\n32x32 faces", "Class 0 pre-DBS\nClass 1 post-DBS"),
-        ("Data QC", "ethics, labels,\nduplicates"),
+        ("PD-DBS\n32\u00d732 faces", "Class 0 pre-DBS\nClass 1 post-DBS"),
+        ("Data QC", "arrays, labels,\nsimilarity"),
         ("NumPy MLP", "p(Class 1) and\nheld-out metrics"),
         ("Calibration", "Brier, ECE,\nreliability bins"),
         ("ROI setup", "fixed atlas plus\nYuNet sensitivity"),
         ("Mask-out AEV", "true-class\nconfidence drop"),
         ("ROI tests", "region-only,\nclass statistics"),
-        ("Audit", "robustness and\nclaim boundary"),
+        ("Audit", "robustness and\nstructured reporting"),
     ]
     x0, y0 = 70, 185
     box_w, box_h, gap = 195, 145, 26
@@ -215,18 +215,16 @@ def pipeline_schematic(output: Path) -> None:
     roi_x = x0 + 4 * (box_w + gap)
     draw.line((roi_x + box_w / 2, y0 + box_h, roi_x + box_w / 2, branch_y), fill=PALETTE["gray"], width=3)
     draw.rounded_rectangle((roi_x - 20, branch_y, roi_x + box_w + 20, branch_y + 112), radius=12, fill=(255, 249, 235), outline=PALETTE["orange"], width=2)
-    text(draw, (roi_x + box_w / 2, branch_y + 27), "YuNet dynamic ROI", 22, bold=True, anchor="ma")
+    text(draw, (roi_x + box_w / 2, branch_y + 27), "YuNet-derived ROI", 22, bold=True, anchor="ma")
     text(draw, (roi_x + box_w / 2, branch_y + 62), "automatic ROI\nsensitivity check", 17, fill=PALETTE["gray"], anchor="ma")
 
     note_y = 560
     draw.rounded_rectangle((120, note_y, 1730, note_y + 220), radius=16, fill=(250, 250, 252), outline=PALETTE["grid"], width=2)
-    text(draw, (150, note_y + 30), "Interpretation boundary", 27, bold=True)
+    text(draw, (150, note_y + 30), "Evaluation outputs", 27, bold=True)
     bullets = [
-        "All quantitative outputs are image-level pre-DBS Class 0 vs post-DBS label Class 1 results.",
-        "Patient-level validation requires patient identifiers.",
-        "Clinical extension requires patient-level outcomes and acquisition metadata.",
-        "Fixed ROI remains the primary atlas; YuNet is a sensitivity analysis for ROI geometry.",
-        "Grad-CAM is a compact consistency check; the main audit is occlusion-based AEV.",
+        "Classification, calibration, and reliability metrics.",
+        "Per-image AEV, class statistics, and retained-region responses.",
+        "Similarity, perturbation, ROI-geometry, and cross-method sensitivity.",
     ]
     for j, bullet in enumerate(bullets):
         text(draw, (168, note_y + 78 + j * 29), f"- {bullet}", 20, fill=PALETTE["text"])
@@ -257,14 +255,14 @@ def _short_roi_label(name: str) -> str:
 
 def _compact_roi_label(name: str) -> str:
     labels = {
-        "upper_brow_forehead": "upper brow",
+        "upper_brow_forehead": "upper brow/forehead",
         "left_periocular": "left periocular",
         "right_periocular": "right periocular",
         "nasal_midface": "nasal midface",
-        "left_cheek_zygomatic": "left cheek",
-        "right_cheek_zygomatic": "right cheek",
-        "perioral_mouth": "mouth",
-        "chin_mandible": "chin",
+        "left_cheek_zygomatic": "left cheek/zygomatic",
+        "right_cheek_zygomatic": "right cheek/zygomatic",
+        "perioral_mouth": "perioral/mouth",
+        "chin_mandible": "chin/mandible",
     }
     return labels.get(name, name.replace("_", " "))
 
@@ -309,7 +307,7 @@ def _draw_aev_bar_panel(
     x_min, x_max = -0.15, 0.85
     zero_x = axis_x0 + (0 - x_min) / (x_max - x_min) * (axis_x1 - axis_x0)
 
-    text(draw, (x0, y0), "AEV scores for this sample", 22, bold=True)
+    text(draw, (x0, y0), "AEV components for this sample", 22, bold=True)
     text(
         draw,
         (x0, y1 - 24),
@@ -347,6 +345,7 @@ def _draw_dual_aev_row(
     masks: np.ndarray,
     roi_defs: list[dict[str, str]],
 ) -> None:
+    """Draw one full-width AEV example with print-readable labels."""
     sample_id = sample_row["sample_id"]
     y_true = int(sample_row["y_true"])
     y_pred = int(sample_row["y_pred_original"])
@@ -354,34 +353,34 @@ def _draw_dual_aev_row(
     true_conf = float(sample_row["true_conf_original"])
     row_fill = (247, 250, 252) if y_true == 0 else (255, 250, 242)
     row_outline = PALETTE["grid"] if y_true == 0 else (225, 195, 150)
-    draw.rounded_rectangle((48, y, 1852, y + 480), radius=18, fill=row_fill, outline=row_outline, width=2)
+    draw.rounded_rectangle((48, y, 1852, y + 345), radius=18, fill=row_fill, outline=row_outline, width=2)
 
-    text(draw, (78, y + 28), f"{sample_id} | true Class {y_true} | predicted Class {y_pred}", 25, bold=True)
+    # At 1900 px across an approximately 160 mm text width, 21 px is about 5 pt.
+    text(draw, (75, y + 17), f"{sample_id} | true Class {y_true} | predicted Class {y_pred}", 24, bold=True)
     text(
         draw,
-        (78, y + 62),
-        f"p(Class 1) = {p_class1:.4f}; true-class confidence = {true_conf:.4f}",
-        18,
+        (75, y + 49),
+        f"p(Class 1) = {p_class1:.4f}, true-class confidence = {true_conf:.4f}",
+        21,
         fill=PALETTE["gray"],
     )
 
     vmin, vmax = float(sample_image.min()), float(sample_image.max())
-    face = _scaled_face(sample_image, 180, vmin, vmax)
-    draw.rounded_rectangle((82, y + 105, 292, y + 345), radius=12, fill="white", outline=PALETTE["grid"], width=2)
-    img.paste(face, (97, y + 120))
-    text(draw, (187, y + 315), "original 32 x 32 face", 16, fill=PALETTE["gray"], anchor="ma")
+    face = _scaled_face(sample_image, 128, vmin, vmax)
+    draw.rounded_rectangle((78, y + 88, 230, y + 270), radius=12, fill="white", outline=PALETTE["grid"], width=2)
+    img.paste(face, (90, y + 100))
+    text(draw, (154, y + 235), "original face", 21, fill=PALETTE["gray"], anchor="ma")
 
     conf_label = f"p(Class {y_true}) = {true_conf:.4f}"
-    draw.rounded_rectangle((86, y + 360, 286, y + 445), radius=12, fill=(232, 247, 245), outline=PALETTE["teal"], width=2)
-    text(draw, (186, y + 384), "original confidence", 14, bold=True, fill=PALETTE["teal"], anchor="ma")
-    text(draw, (186, y + 416), conf_label, 19, bold=True, fill=PALETTE["teal"], anchor="ma")
+    draw.rounded_rectangle((52, y + 281, 256, y + 329), radius=12, fill=(232, 247, 245), outline=PALETTE["teal"], width=2)
+    text(draw, (154, y + 305), conf_label, 21, bold=True, fill=PALETTE["teal"], anchor="mm")
 
-    text(draw, (335, y + 92), "Eight fixed-atlas mask-out inputs", 20, bold=True)
-    tile_size = 82
-    tile_gap_x = 30
-    tile_gap_y = 56
-    start_x = 342
-    start_y = y + 128
+    text(draw, (270, y + 79), "Eight fixed-atlas mask-out inputs", 21, bold=True)
+    tile_size = 72
+    tile_gap_x = 33
+    tile_gap_y = 33
+    start_x = 275
+    start_y = y + 108
     for i, roi_def in enumerate(roi_defs):
         row = i // 4
         col = i % 4
@@ -392,18 +391,64 @@ def _draw_dual_aev_row(
         tile = _scaled_face(masked, tile_size, vmin, vmax)
         _draw_roi_outline(tile, roi_def, PALETTE["red"], width=2)
         draw.rounded_rectangle(
-            (tile_x - 5, tile_y - 5, tile_x + tile_size + 5, tile_y + tile_size + 24),
+            (tile_x - 5, tile_y - 5, tile_x + tile_size + 5, tile_y + tile_size + 29),
             radius=8,
             fill="white",
             outline=PALETTE["grid"],
             width=1,
         )
         img.paste(tile, (tile_x, tile_y))
-        text(draw, (tile_x + tile_size / 2, tile_y + tile_size + 8), f"ROI {i + 1}", 13, bold=True, anchor="ma")
+        text(draw, (tile_x + tile_size / 2, tile_y + tile_size + 7), f"ROI {i + 1}", 21, bold=True, anchor="ma")
 
-    draw.line((838, y + 116, 892, y + 116), fill=PALETTE["teal"], width=5)
-    draw.polygon([(892, y + 116), (870, y + 104), (870, y + 128)], fill=PALETTE["teal"])
-    _draw_aev_bar_panel(draw, sample_row, roi_defs, (930, y + 92, 1818, y + 420))
+    draw.line((697, y + 136, 750, y + 136), fill=PALETTE["teal"], width=5)
+    draw.polygon([(750, y + 136), (728, y + 124), (728, y + 148)], fill=PALETTE["teal"])
+
+    bar_x0, label_x = 780, 1040
+    axis_x0, axis_x1, value_x = 1060, 1690, 1815
+    top, bottom = y + 111, y + 287
+    x_min, x_max = -0.15, 0.85
+    zero_x = axis_x0 + (0 - x_min) / (x_max - x_min) * (axis_x1 - axis_x0)
+    text(draw, (bar_x0, y + 78), "AEV components", 22, bold=True)
+    text(draw, (1005, y + 79), "Top four drops marked 1 to 4", 21, fill=PALETTE["gray"])
+
+    ranked = sorted(
+        [
+            (roi_def["roi_name"], float(sample_row[f"evidence_drop__{roi_def['roi_name']}"]))
+            for roi_def in roi_defs
+        ],
+        key=lambda item: item[1],
+        reverse=True,
+    )[:4]
+    rank_by_roi = {roi: rank for rank, (roi, _) in enumerate(ranked, start=1)}
+
+    for tick in [-0.10, 0.00, 0.40, 0.80]:
+        tx = axis_x0 + (tick - x_min) / (x_max - x_min) * (axis_x1 - axis_x0)
+        draw.line((tx, top, tx, bottom), fill=PALETTE["grid"], width=1)
+        text(draw, (tx, bottom + 8), f"{tick:.1f}", 21, fill=PALETTE["gray"], anchor="ma")
+    draw.line((zero_x, top, zero_x, bottom), fill=PALETTE["text"], width=2)
+
+    row_h = (bottom - top) / len(roi_defs)
+    for i, roi_def in enumerate(roi_defs):
+        roi = roi_def["roi_name"]
+        value = float(sample_row[f"evidence_drop__{roi}"])
+        yy = top + i * row_h + row_h * 0.5
+        roi_label = _compact_roi_label(roi)
+        if roi in rank_by_roi:
+            roi_label = f"{rank_by_roi[roi]}. {roi_label}"
+        text(draw, (label_x, yy), roi_label, 21, anchor="rm")
+        x_value = axis_x0 + (value - x_min) / (x_max - x_min) * (axis_x1 - axis_x0)
+        colour = PALETTE["red"] if value >= 0 else PALETTE["blue"]
+        bx0, bx1 = sorted((zero_x, x_value))
+        draw.rectangle((bx0, yy - 6, bx1, yy + 6), fill=colour)
+        text(draw, (value_x, yy), f"{value:+.3f}", 21, fill=colour, anchor="rm")
+
+    text(
+        draw,
+        (bar_x0, y + 321),
+        "Positive value: masking lowered true-class confidence.",
+        21,
+        fill=PALETTE["gray"],
+    )
 
 
 def dual_aev_worked_example(output: Path) -> None:
@@ -423,137 +468,61 @@ def dual_aev_worked_example(output: Path) -> None:
     text(
         draw,
         (58, 72),
-        "Correct NumPy MLP predictions with true-class confidence between 0.85 and 0.95; fixed ROI atlas and training-set-mean mask-out.",
-        19,
+        "Correct NumPy MLP predictions with true-class confidence between 0.85 and 0.95. Fixed ROI atlas and training-set-mean mask-out.",
+        21,
         fill=PALETTE["gray"],
     )
-    step_y = 105
+    step_y = 103
     steps = [
         "full face",
         "mask one fixed ROI",
-        "re-run locked MLP",
+        "re-run MLP",
         "record true-class drop",
-        "assemble eight-value AEV",
+        "assemble 8 AEV components",
     ]
-    x = 70
+    x = 80
+    step_width = 285
+    step_gap = 65
     for i, step in enumerate(steps):
-        draw.rounded_rectangle((x, step_y, x + 245, step_y + 38), radius=9, fill=PALETTE["light"], outline=PALETTE["grid"], width=1)
-        text(draw, (x + 122, step_y + 20), step, 15, bold=i in {0, 4}, anchor="ma")
+        current_step_width = 320 if i == len(steps) - 1 else step_width
+        draw.rounded_rectangle((x, step_y, x + current_step_width, step_y + 42), radius=9, fill=PALETTE["light"], outline=PALETTE["grid"], width=1)
+        step_font = font(21, bold=i in {0, 4})
+        left, top, right, bottom = draw.textbbox((0, 0), step, font=step_font)
+        text_x = x + current_step_width / 2 - (left + right) / 2
+        text_y = step_y + 21 - (top + bottom) / 2
+        draw.text((text_x, text_y), step, font=step_font, fill=PALETTE["text"])
         if i < len(steps) - 1:
-            draw.line((x + 250, step_y + 19, x + 287, step_y + 19), fill=PALETTE["gray"], width=3)
-            draw.polygon([(x + 287, step_y + 19), (x + 274, step_y + 12), (x + 274, step_y + 26)], fill=PALETTE["gray"])
-        x += 295
+            arrow_y = step_y + 21
+            draw.line((x + step_width + 5, arrow_y, x + step_width + step_gap - 10, arrow_y), fill=PALETTE["gray"], width=3)
+            draw.polygon(
+                [
+                    (x + step_width + step_gap - 10, arrow_y),
+                    (x + step_width + step_gap - 23, arrow_y - 7),
+                    (x + step_width + step_gap - 23, arrow_y + 7),
+                ],
+                fill=PALETTE["gray"],
+            )
+        x += step_width + step_gap
 
-    def draw_sample_panel(sample_id: str, box: tuple[int, int, int, int]) -> None:
-        x0, y0, x1, y1 = box
+    for sample_id, panel_y in zip(sample_ids, [158, 515]):
         sample_idx = int(sample_id.split("_")[1])
         sample_image = data["x_test_images"][sample_idx, :, :, 0].astype(float)
-        sample_row = aev_rows[sample_id]
-        y_true = int(sample_row["y_true"])
-        y_pred = int(sample_row["y_pred_original"])
-        p_class1 = float(sample_row["p_class1_original"])
-        true_conf = float(sample_row["true_conf_original"])
-        panel_fill = (247, 250, 252) if y_true == 0 else (255, 250, 242)
-        panel_outline = PALETTE["grid"] if y_true == 0 else (225, 195, 150)
-        draw.rounded_rectangle((x0, y0, x1, y1), radius=16, fill=panel_fill, outline=panel_outline, width=2)
-
-        text(draw, (x0 + 24, y0 + 22), f"{sample_id} | true Class {y_true} | predicted Class {y_pred}", 22, bold=True)
-        text(draw, (x0 + 24, y0 + 52), f"p(Class 1) = {p_class1:.4f}; true-class confidence = {true_conf:.4f}", 15, fill=PALETTE["gray"])
-
-        vmin, vmax = float(sample_image.min()), float(sample_image.max())
-        face = _scaled_face(sample_image, 124, vmin, vmax)
-        face_x, face_y = x0 + 30, y0 + 92
-        draw.rounded_rectangle((face_x - 10, face_y - 10, face_x + 134, face_y + 158), radius=10, fill="white", outline=PALETTE["grid"], width=1)
-        img.paste(face, (face_x, face_y))
-        text(draw, (face_x + 62, face_y + 136), "original face", 13, fill=PALETTE["gray"], anchor="ma")
-        draw.rounded_rectangle((face_x - 8, face_y + 176, face_x + 132, face_y + 244), radius=10, fill=(232, 247, 245), outline=PALETTE["teal"], width=2)
-        text(draw, (face_x + 62, face_y + 198), "true-class conf.", 12, bold=True, fill=PALETTE["teal"], anchor="ma")
-        text(draw, (face_x + 62, face_y + 224), f"p(Class {y_true})={true_conf:.4f}", 13, bold=True, fill=PALETTE["teal"], anchor="ma")
-
-        text(draw, (x0 + 190, y0 + 82), "Fixed-atlas mask-out inputs", 17, bold=True)
-        tile_size = 58
-        start_x, start_y = x0 + 195, y0 + 112
-        for i, roi_def in enumerate(roi_defs):
-            row = i // 4
-            col = i % 4
-            tile_x = start_x + col * 72
-            tile_y = start_y + row * 98
-            masked = sample_image.copy()
-            masked[masks[i]] = train_mean_image[masks[i]]
-            tile = _scaled_face(masked, tile_size, vmin, vmax)
-            _draw_roi_outline(tile, roi_def, PALETTE["red"], width=2)
-            draw.rounded_rectangle((tile_x - 4, tile_y - 4, tile_x + tile_size + 4, tile_y + tile_size + 19), radius=7, fill="white", outline=PALETTE["grid"], width=1)
-            img.paste(tile, (tile_x, tile_y))
-            text(draw, (tile_x + tile_size / 2, tile_y + tile_size + 6), f"ROI {i + 1}", 10, bold=True, anchor="ma")
-
-        callout_x0, callout_y0 = x0 + 24, y0 + 365
-        callout_x1, callout_y1 = x0 + 470, y1 - 55
-        draw.rounded_rectangle(
-            (callout_x0, callout_y0, callout_x1, callout_y1),
-            radius=10,
-            fill="white",
-            outline=PALETTE["grid"],
-            width=1,
+        _draw_dual_aev_row(
+            img,
+            draw,
+            panel_y,
+            aev_rows[sample_id],
+            sample_image,
+            train_mean_image,
+            masks,
+            roi_defs,
         )
-        text(draw, (callout_x0 + 18, callout_y0 + 22), "Largest drops in this example", 16, bold=True)
-        text(draw, (callout_x0 + 18, callout_y0 + 46), "Higher values indicate stronger true-class evidence.", 12, fill=PALETTE["gray"])
-        ranked = sorted(
-            [
-                (roi_def["roi_name"], float(sample_row[f"evidence_drop__{roi_def['roi_name']}"]))
-                for roi_def in roi_defs
-            ],
-            key=lambda item: item[1],
-            reverse=True,
-        )[:4]
-        max_drop = max((value for _, value in ranked), default=1.0)
-        max_drop = max(max_drop, 0.001)
-        for j, (roi, value) in enumerate(ranked):
-            yy = callout_y0 + 86 + j * 56
-            text(draw, (callout_x0 + 18, yy), f"{j + 1}. {_compact_roi_label(roi)}", 13, anchor="lm")
-            bar_left, bar_right = callout_x0 + 190, callout_x1 - 78
-            draw.rounded_rectangle((bar_left, yy - 7, bar_right, yy + 7), radius=5, fill=PALETTE["light"])
-            fill_right = bar_left + max(0.0, value) / max_drop * (bar_right - bar_left)
-            draw.rounded_rectangle((bar_left, yy - 7, fill_right, yy + 7), radius=5, fill=PALETTE["red"])
-            text(draw, (callout_x1 - 16, yy), f"{value:+.3f}", 12, fill=PALETTE["red"] if value >= 0 else PALETTE["blue"], anchor="rm")
-
-        bar_x0, bar_y0 = x0 + 500, y0 + 82
-        bar_x1, bar_y1 = x1 - 25, y1 - 100
-        text(draw, (bar_x0, y0 + 82), "AEV scores", 17, bold=True)
-        label_x = bar_x0 + 138
-        axis_x0 = bar_x0 + 155
-        axis_x1 = bar_x1 - 62
-        top = bar_y0 + 35
-        bottom = bar_y1
-        x_min, x_max = -0.15, 0.85
-        zero_x = axis_x0 + (0 - x_min) / (x_max - x_min) * (axis_x1 - axis_x0)
-        for tick in [-0.10, 0.00, 0.40, 0.80]:
-            tx = axis_x0 + (tick - x_min) / (x_max - x_min) * (axis_x1 - axis_x0)
-            draw.line((tx, top, tx, bottom), fill=PALETTE["grid"], width=1)
-        draw.line((zero_x, top, zero_x, bottom), fill=PALETTE["text"], width=2)
-        row_h = (bottom - top) / len(roi_defs)
-        for i, roi_def in enumerate(roi_defs):
-            roi = roi_def["roi_name"]
-            val = float(sample_row[f"evidence_drop__{roi}"])
-            yy = top + i * row_h + row_h * 0.5
-            text(draw, (label_x, yy), _compact_roi_label(roi), 12, anchor="rm")
-            x_val = axis_x0 + (val - x_min) / (x_max - x_min) * (axis_x1 - axis_x0)
-            colour = PALETTE["red"] if val >= 0 else PALETTE["blue"]
-            bx0, bx1 = sorted((zero_x, x_val))
-            draw.rectangle((bx0, yy - 6, bx1, yy + 6), fill=colour)
-            text(draw, (bar_x1 - 2, yy), f"{val:+.3f}", 11, fill=colour, anchor="rm")
-        text(draw, (axis_x0, bottom + 13), "-0.1", 10, fill=PALETTE["gray"], anchor="ma")
-        text(draw, (zero_x, bottom + 13), "0", 10, fill=PALETTE["gray"], anchor="ma")
-        text(draw, (axis_x1, bottom + 13), "0.8", 10, fill=PALETTE["gray"], anchor="ma")
-        text(draw, (bar_x0, y1 - 38), "positive drop = masking lowered true-class confidence", 13, fill=PALETTE["gray"])
-
-    draw_sample_panel(sample_ids[0], (55, 165, 925, 910))
-    draw_sample_panel(sample_ids[1], (975, 165, 1845, 910))
 
     text(
         draw,
-        (60, h - 30),
-        "Each panel uses the same fixed ROI atlas and the same locked NumPy MLP output table.",
-        15,
+        (60, h - 34),
+        "Each panel uses the same fixed ROI atlas and the same NumPy MLP output table.",
+        21,
         fill=PALETTE["gray"],
     )
     img.save(output)
@@ -570,6 +539,7 @@ def _panel_axis(
     x_max: float,
     ticks: list[float],
     tick_fmt: str,
+    tick_font_size: int = 16,
 ) -> None:
     x0, y0, x1, y1 = box
     draw.line((x0, y1, x1, y1), fill=PALETTE["text"], width=2)
@@ -577,7 +547,7 @@ def _panel_axis(
         x = _x_pos(x0, x1, x_min, x_max, tick)
         draw.line((x, y0, x, y1), fill=PALETTE["grid"], width=1)
         draw.line((x, y1, x, y1 + 7), fill=PALETTE["text"], width=2)
-        text(draw, (x, y1 + 13), tick_fmt.format(tick), 16, fill=PALETTE["gray"], anchor="ma")
+        text(draw, (x, y1 + 13), tick_fmt.format(tick), tick_font_size, fill=PALETTE["gray"], anchor="ma")
 
 
 def roi_evidence_summary_figure(output: Path) -> None:
@@ -589,7 +559,7 @@ def roi_evidence_summary_figure(output: Path) -> None:
     text(
         draw,
         (55, 80),
-        "Rows are ordered by fixed-atlas mask-out evidence; columns show ROI size, evidence drop, class direction, and region-only AUROC.",
+        "Rows are ordered by fixed-atlas mask-out evidence. Columns show ROI size, evidence drop, class direction, and region-only AUROC.",
         22,
         fill=PALETTE["gray"],
     )
@@ -676,23 +646,22 @@ def roi_evidence_summary_figure(output: Path) -> None:
         text(draw, (a_x + 11, y), f"{a_val:.3f}", 16, fill=PALETTE["text"], anchor="lm")
 
     text(draw, (label_x, top - 56), "ROI", 22, bold=True, anchor="rm")
-    text(draw, (1010, bottom + 72), "orange = higher Class 0 evidence; blue = higher Class 1 evidence", 17, fill=PALETTE["gray"])
-    text(draw, (55, h - 74), "Class 0 = pre-DBS; Class 1 = post-DBS label. Region-only AUROC uses the same trained MLP with one retained ROI.", 19, fill=PALETTE["gray"])
-    text(draw, (55, h - 43), "Full-face AUROC is 0.9824, so region-only values are interpreted as partial local signal.", 19, fill=PALETTE["gray"])
+    text(draw, (1010, bottom + 72), "orange = higher Class 0 evidence, blue = higher Class 1 evidence", 17, fill=PALETTE["gray"])
+    text(draw, (55, h - 58), "Class 0 = pre-DBS. Class 1 = post-DBS. Region-only AUROC uses the same trained MLP with one retained ROI.", 19, fill=PALETTE["gray"])
     img.save(output)
 
 
 def robustness_summary_figure(output: Path) -> None:
-    """Combine seed stability and perturbation robustness into one compact figure."""
-    w, h = 1700, 760
+    """Combine seed stability and perturbation robustness in a readable stacked figure."""
+    w, h = 1400, 1160
     img = Image.new("RGB", (w, h), "white")
     draw = ImageDraw.Draw(img)
-    text(draw, (55, 34), "Robustness summary", 38, bold=True)
+    text(draw, (55, 34), "Robustness summary", 42, bold=True)
     text(
         draw,
-        (55, 80),
-        "Repeated seeds show stable technical metrics; crop/resize perturbations produce the largest AUROC drops.",
-        22,
+        (55, 86),
+        "Repeated runs report mean, SD, and range. Image perturbation sensitivity is summarised by AUROC change.",
+        24,
         fill=PALETTE["gray"],
     )
 
@@ -708,27 +677,27 @@ def robustness_summary_figure(output: Path) -> None:
         ("Brier", "brier_score"),
         ("ECE", "ece"),
     ]
-    left, top = 65, 165
-    text(draw, (left, top - 55), "A. Five-seed stability", 26, bold=True)
-    text(draw, (left, top - 25), "mean +/- SD", 17, fill=PALETTE["gray"])
-    col_x = [left, left + 280, left + 435, left + 585]
+    left, top, table_right = 70, 190, 1330
+    text(draw, (left, top - 60), "A. Five-seed stability", 30, bold=True)
+    text(draw, (left, top - 27), "mean \u00b1 SD", 22, fill=PALETTE["gray"])
+    col_x = [left, 560, 800, 1035]
     header_y = top + 5
-    draw.rounded_rectangle((left - 8, header_y - 4, left + 710, header_y + 48), radius=8, fill=PALETTE["navy"])
+    draw.rounded_rectangle((left - 8, header_y - 4, table_right, header_y + 51), radius=8, fill=PALETTE["navy"])
     for x, label in zip(col_x, ["Metric", "Mean", "SD", "Range"]):
-        text(draw, (x + 6, header_y + 22), label, 19, bold=True, fill="white", anchor="lm")
+        text(draw, (x + 6, header_y + 24), label, 25, bold=True, fill="white", anchor="lm")
     row_h = 62
     for i, (label, key) in enumerate(metrics):
-        y = header_y + 52 + i * row_h
+        y = header_y + 55 + i * row_h
         fill = PALETTE["light"] if i % 2 == 0 else "white"
-        draw.rectangle((left - 8, y, left + 710, y + row_h), fill=fill)
+        draw.rectangle((left - 8, y, table_right, y + row_h), fill=fill)
         r = seed_rows[key]
         mean, sd = float(r["mean"]), float(r["sd"])
         min_v, max_v = float(r["min"]), float(r["max"])
-        text(draw, (col_x[0] + 6, y + row_h / 2), label, 19, anchor="lm")
-        text(draw, (col_x[1] + 6, y + row_h / 2), f"{mean:.4f}", 19, anchor="lm")
-        text(draw, (col_x[2] + 6, y + row_h / 2), f"{sd:.4f}", 19, anchor="lm")
-        text(draw, (col_x[3] + 6, y + row_h / 2), f"{min_v:.3f}-{max_v:.3f}", 19, anchor="lm")
-    draw.rectangle((left - 8, header_y - 4, left + 710, header_y + 52 + row_h * len(metrics)), outline=PALETTE["grid"], width=2)
+        text(draw, (col_x[0] + 6, y + row_h / 2), label, 25, anchor="lm")
+        text(draw, (col_x[1] + 6, y + row_h / 2), f"{mean:.4f}", 25, anchor="lm")
+        text(draw, (col_x[2] + 6, y + row_h / 2), f"{sd:.4f}", 25, anchor="lm")
+        text(draw, (col_x[3] + 6, y + row_h / 2), f"{min_v:.3f}\u2013{max_v:.3f}", 25, anchor="lm")
+    draw.rectangle((left - 8, header_y - 4, table_right, header_y + 55 + row_h * len(metrics)), outline=PALETTE["grid"], width=2)
 
     p_rows = [
         r for r in read_csv("outputs/robustness/perturbation_metrics.csv")
@@ -739,24 +708,32 @@ def robustness_summary_figure(output: Path) -> None:
         "center_crop_28_resize": "centre crop",
         "offset_crop_28_resize": "offset crop",
     }
-    px0, py0, px1, py1 = 930, 210, 1560, 610
-    text(draw, (px0, top - 55), "B. Perturbation effect", 26, bold=True)
-    text(draw, (px0, top - 25), "Delta AUROC versus original test images", 17, fill=PALETTE["gray"])
-    _panel_axis(draw, (px0, py0, px1, py1), -0.15, 0.01, [-0.15, -0.10, -0.05, 0.00], "{:.2f}")
+    px0, py0, px1, py1 = 360, 790, 1310, 1050
+    text(draw, (left, 690), "B. Perturbation effect", 30, bold=True)
+    text(draw, (left, 728), "Delta AUROC versus original test images", 22, fill=PALETTE["gray"])
+    _panel_axis(
+        draw,
+        (px0, py0, px1, py1),
+        -0.15,
+        0.01,
+        [-0.15, -0.10, -0.05, 0.00],
+        "{:.2f}",
+        tick_font_size=21,
+    )
     zero = _x_pos(px0, px1, -0.15, 0.01, 0)
     draw.line((zero, py0, zero, py1), fill=PALETTE["text"], width=2)
     row_h = (py1 - py0) / len(p_rows)
     for i, row in enumerate(p_rows):
         y = py0 + i * row_h + row_h / 2
         label = p_labels.get(row["perturbation"], row["perturbation"].replace("_", " "))
-        text(draw, (px0 - 18, y), label, 19, anchor="rm")
+        text(draw, (px0 - 18, y), label, 25, anchor="rm")
         val = float(row["delta_auroc_vs_original"])
         x_val = _x_pos(px0, px1, -0.15, 0.01, val)
         x_start, x_end = sorted([zero, x_val])
-        draw.rounded_rectangle((x_start, y - 14, x_end, y + 14), radius=7, fill=PALETTE["orange"])
-        text(draw, (x_start - 10, y), f"{val:.3f}", 18, anchor="rm")
+        draw.rounded_rectangle((x_start, y - 16, x_end, y + 16), radius=7, fill=PALETTE["orange"])
+        text(draw, (x_start - 10, y), f"{val:.3f}", 23, anchor="rm")
 
-    text(draw, (930, 680), "Original AUROC = 0.9824. Blur changes little; crop/resize is the larger stressor.", 19, fill=PALETTE["gray"])
+    text(draw, (360, 1110), "Original AUROC = 0.9824. Centre and offset crops produce the larger changes.", 22, fill=PALETTE["gray"])
     img.save(output)
 
 
@@ -786,7 +763,7 @@ def _draw_grouped_hbars(
     row_h = (bottom - top) / len(rows)
     for i, (label, a_val, b_val) in enumerate(rows):
         y = top + i * row_h + row_h / 2
-        text(draw, (left - 12, y), _roi_label(label), 16, anchor="rm")
+        text(draw, (left - 12, y), _short_roi_label(label), 16, anchor="rm")
         for value, color, dy in [(a_val, PALETTE["blue"], -8), (b_val, PALETTE["orange"], 8)]:
             x_val = left + (value - x_min) / (x_max - x_min) * (right - left)
             draw.rounded_rectangle((left, y + dy - 5, x_val, y + dy + 5), radius=4, fill=color)
@@ -799,11 +776,25 @@ def yunet_dynamic_roi_figure(output: Path) -> None:
     w, h = 1700, 1100
     img = Image.new("RGB", (w, h), "white")
     draw = ImageDraw.Draw(img)
-    text(draw, (55, 34), "YuNet dynamic ROI sensitivity analysis", 36, bold=True)
+    roi_defs = sorted(
+        read_csv("outputs/roi/coarse_roi_definitions.csv"),
+        key=lambda row: int(row["roi_index"]),
+    )
+    roi_colours = [
+        PALETTE["blue"],
+        PALETTE["orange"],
+        PALETTE["green"],
+        PALETTE["teal"],
+        PALETTE["red"],
+        (120, 90, 170),
+        (180, 120, 60),
+        (80, 120, 180),
+    ]
+    text(draw, (55, 34), "YuNet-derived ROI sensitivity analysis", 36, bold=True)
     text(
         draw,
         (55, 80),
-        "Automatic five-landmark ROI boxes are compared with the fixed 32x32 atlas for the same eight ROI names.",
+        "Automatic five-landmark ROI boxes are compared with the fixed atlas on the 32\u00d732 grid.",
         22,
         fill=PALETTE["gray"],
     )
@@ -834,16 +825,6 @@ def yunet_dynamic_roi_figure(output: Path) -> None:
             key=lambda sid: float(sample_rows[sid][0]["score"]),
             reverse=True,
         )[:4]
-        roi_colours = [
-            PALETTE["blue"],
-            PALETTE["orange"],
-            PALETTE["green"],
-            PALETTE["teal"],
-            PALETTE["red"],
-            (120, 90, 170),
-            (180, 120, 60),
-            (80, 120, 180),
-        ]
         for idx, sample_id in enumerate(selected):
             sample_idx = int(sample_id.split("_")[1])
             arr = data["x_test_images"][sample_idx, :, :, 0].astype(float)
@@ -867,6 +848,18 @@ def yunet_dynamic_roi_figure(output: Path) -> None:
     else:
         text(draw, (90, 210), "YuNet ROI examples unavailable", 20, fill=PALETTE["red"])
 
+    draw.rounded_rectangle((65, 715, 600, 845), radius=10, fill=PALETTE["light"], outline=PALETTE["grid"], width=2)
+    text(draw, (85, 728), "ROI key: colour and number", 20, bold=True)
+    for i, roi_def in enumerate(roi_defs):
+        key_col = i // 4
+        key_row = i % 4
+        key_x = 85 + key_col * 260
+        key_y = 758 + key_row * 25
+        colour = roi_colours[i % len(roi_colours)]
+        draw.rounded_rectangle((key_x, key_y - 11, key_x + 30, key_y + 11), radius=5, fill=colour)
+        text(draw, (key_x + 15, key_y), str(i + 1), 19, bold=True, fill="white", anchor="mm")
+        text(draw, (key_x + 40, key_y), _short_roi_label(roi_def["roi_name"]), 20, anchor="lm")
+
     aev_rows_raw = read_csv("outputs/external/pd_dbs_yunet_aev/yunet_vs_fixed_aev_occlusion_comparison.csv")
     aev_rows = [
         (r["roi_name"], _as_float(r, "mean_evidence_drop_fixed"), _as_float(r, "mean_evidence_drop_yunet"))
@@ -876,12 +869,12 @@ def yunet_dynamic_roi_figure(output: Path) -> None:
     _draw_grouped_hbars(
         draw,
         aev_rows,
-        (760, 190, 1470, 500),
+        (820, 190, 1530, 500),
         0.0,
         0.08,
-        "fixed",
-        "YuNet",
-        "B. Mask-out AEV mean evidence drop",
+        "fixed atlas",
+        "YuNet-derived",
+        "B. Mean true-class confidence drop",
         "Mean true-class confidence drop",
     )
 
@@ -894,27 +887,27 @@ def yunet_dynamic_roi_figure(output: Path) -> None:
     _draw_grouped_hbars(
         draw,
         region_rows,
-        (760, 700, 1470, 980),
+        (820, 700, 1530, 980),
         0.52,
         0.73,
-        "fixed",
-        "YuNet",
+        "fixed atlas",
+        "YuNet-derived",
         "C. Region-only AUROC",
         "AUROC from a single retained ROI",
     )
 
     note = (
-        "Detection: 2343/2343 faces; median YuNet score 0.923. "
-        "Use: sensitivity check for ROI geometry alongside the fixed atlas."
+        "Detection: 2,343/2,343 faces. Median YuNet score: 0.923. "
+        "The comparison evaluates ROI-geometry sensitivity."
     )
-    draw.rounded_rectangle((65, 790, 600, 950), radius=12, fill=(255, 249, 235), outline=PALETTE["orange"], width=2)
-    text(draw, (88, 815), "Interpretation", 23, bold=True)
+    draw.rounded_rectangle((65, 860, 600, 1018), radius=12, fill=(255, 249, 235), outline=PALETTE["orange"], width=2)
+    text(draw, (88, 885), "Interpretation", 23, bold=True)
     for j, line in enumerate([
-        "Right cheek remains stable across ROI definitions.",
-        "Mouth and nasal regions increase under dynamic boxes.",
+        "Right cheek/zygomatic AUROC changes little across ROI definitions.",
+        "Perioral/mouth and nasal estimates increase with YuNet geometry.",
         "Ranking changes show sensitivity to ROI geometry.",
     ]):
-        text(draw, (90, 855 + j * 27), f"- {line}", 18)
+        text(draw, (90, 925 + j * 27), f"- {line}", 18)
     text(draw, (60, h - 42), note, 18, fill=PALETTE["gray"])
     img.save(output)
 
@@ -968,7 +961,7 @@ def baseline_panel_from_outputs(output: Path) -> None:
     img = Image.new("RGB", (w, h), "white")
     draw = ImageDraw.Draw(img)
     text(draw, (50, 35), "Baseline numeric classification", 34, bold=True)
-    text(draw, (50, 78), "The dependency-light MLP establishes the Class 0 vs Class 1 evaluation loop.", 22, fill=PALETTE["gray"])
+    text(draw, (50, 78), "The NumPy MLP baseline establishes the Class 0 vs Class 1 evaluation loop.", 22, fill=PALETTE["gray"])
     panels = {
         "cm": (60, 140, 700, 520),
         "roc": (790, 140, 1440, 520),
@@ -1013,7 +1006,7 @@ def baseline_panel_from_outputs(output: Path) -> None:
             draw.rectangle((gx, gy, gx + cell, gy + 70), fill=fill, outline=PALETTE["grid"], width=2)
             color = "white" if r == 0 or c == 0 else PALETTE["text"]
             text(draw, (gx + cell / 2, gy + 35), val, 21, fill=color, bold=(r == 0 or c == 0), anchor="mm")
-    text(draw, (x0 + 30, y1 - 45), f"Accuracy {metrics['accuracy']:.4f}; AUROC {metrics['auroc']:.4f}", 20, fill=PALETTE["gray"])
+    text(draw, (x0 + 30, y1 - 45), f"Accuracy {metrics['accuracy']:.4f}   AUROC {metrics['auroc']:.4f}", 20, fill=PALETTE["gray"])
 
     roc_points = [(float(r["fpr"]), float(r["tpr"])) for r in roc_rows]
     pr_points = [(float(r["recall"]), float(r["precision"])) for r in pr_rows]
@@ -1064,7 +1057,7 @@ def main() -> int:
     hbar(
         [(r["roi"], float(r["diff_class1_minus_class0"])) for r in rows],
         "Class-specific AEV differences",
-        "Positive values indicate higher evidence in Class 1; negative values indicate higher evidence in Class 0.",
+        "Positive values indicate higher evidence in Class 1. Negative values indicate higher evidence in Class 0.",
         "Mean evidence difference: Class 1 minus Class 0",
         OUT / "fig_aev_class_difference.png",
         x_min=-0.08,
@@ -1089,7 +1082,7 @@ def main() -> int:
     line_plot(
         points,
         "Reliability diagram",
-        "Calibration is assessed for the pre-DBS Class 0 versus post-DBS label Class 1 label task.",
+        "Calibration is assessed for the Class 0 pre-DBS versus Class 1 post-DBS task.",
         "Mean predicted probability for Class 1",
         "Observed Class 1 fraction",
         OUT / "fig_calibration_reliability.png",
@@ -1099,7 +1092,7 @@ def main() -> int:
     hbar(
         [(r["perturbation"], float(r["delta_auroc_vs_original"])) for r in rows if r["perturbation"] != "original"],
         "Perturbation robustness",
-        "Mild blur has little effect; crop/resize perturbations cause larger AUROC drops.",
+        "Mild blur has little effect. Crop/resize perturbations cause larger AUROC drops.",
         "Delta AUROC versus original test images",
         OUT / "fig_perturbation_robustness.png",
         x_min=-0.15,
@@ -1117,7 +1110,7 @@ def main() -> int:
     hbar(
         [(r["roi_name"], float(r["pixel_count"])) for r in roi_rows],
         "Coarse ROI pixel coverage",
-        "The eight 32x32 ROI masks are mutually exclusive and cover 840 pixels.",
+        "The eight 32\u00d732 ROI masks are mutually exclusive and cover 840 pixels.",
         "Pixels per ROI",
         OUT / "fig_roi_pixel_counts.png",
         x_min=0,
@@ -1152,7 +1145,7 @@ def main() -> int:
     near_duplicate_row = next(r for r in threshold_rows if str(float(r["max_cosine_exclusion_threshold"])) == "0.999")
     identity_rows.append(
         [
-            "remove high-cos\nnear-duplicates",
+            "max-cosine < 0.999\nsubset",
             near_duplicate_row["remaining_test_samples"],
             f"{float(near_duplicate_row['accuracy']):.4f}",
             f"{float(near_duplicate_row['balanced_accuracy']):.4f}",
@@ -1164,7 +1157,7 @@ def main() -> int:
         row = next(r for r in threshold_rows if str(float(r["max_cosine_exclusion_threshold"])) == threshold)
         identity_rows.append(
             [
-                f"remove max-cos >= {threshold}",
+                f"max-cosine < {threshold}\nsubset",
                 row["remaining_test_samples"],
                 f"{float(row['accuracy']):.4f}",
                 f"{float(row['balanced_accuracy']):.4f}",
@@ -1175,7 +1168,7 @@ def main() -> int:
     global_metrics = json.loads(Path("outputs/data_qc/global_statistics_baseline_metrics.json").read_text(encoding="utf-8"))
     identity_rows.append(
         [
-            "global-statistics\nlogistic baseline",
+            "global image-statistics\nlogistic baseline",
             str(global_metrics["n"]),
             f"{float(global_metrics['accuracy']):.4f}",
             f"{float(global_metrics['balanced_accuracy']):.4f}",
@@ -1186,7 +1179,7 @@ def main() -> int:
     lowlevel_metrics = json.loads(Path("outputs/lowlevel_roi_confound/metrics.json").read_text(encoding="utf-8"))
     identity_rows.append(
         [
-            "ROI low-level\nsummary baseline",
+            "ROI low-level\nbaseline",
             str(lowlevel_metrics["n"]),
             f"{float(lowlevel_metrics['accuracy']):.4f}",
             f"{float(lowlevel_metrics['balanced_accuracy']):.4f}",
@@ -1197,9 +1190,9 @@ def main() -> int:
     table_panel(
         ["Audit", "N", "Accuracy", "Bal. acc.", "AUROC", "Trap. AUPRC"],
         identity_rows,
-        "Identity-leakage and low-level confound audit",
-        "Near-duplicate removal, similarity exclusions, global statistics, and ROI low-level summaries assess the image-level result.",
-        OUT / "fig_identity_leakage_audit.png",
+        "Similarity and low-level summary audit",
+        "Similarity-threshold subsets, global statistics, and ROI low-level summaries describe image-level sensitivity.",
+        OUT / "fig_similarity_lowlevel_audit.png",
     )
 
     print(f"Wrote figures to {OUT.resolve()}")
