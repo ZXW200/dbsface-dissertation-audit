@@ -330,7 +330,7 @@ def main() -> int:
         "",
         "Only one YuNet landmark5-derived dynamic ROI is retained at a time; all other pixels are replaced with the training mean.",
         "",
-        "Class convention: Class 0 = pre-DBS; Class 1 = post-DBS label. This is an ROI-definition sensitivity analysis.",
+        "Class 0 represents pre-DBS images and Class 1 represents post-DBS images. The analysis evaluates ROI-definition sensitivity.",
         "",
         "| ROI | Accuracy | Balanced accuracy | AUROC | AUPRC | Mean true confidence | Missing n | Mean ROI pixels |",
         "|---|---:|---:|---:|---:|---:|---:|---:|",

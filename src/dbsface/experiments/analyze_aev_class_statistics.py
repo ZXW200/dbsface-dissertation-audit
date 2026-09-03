@@ -120,7 +120,7 @@ def main() -> int:
         "",
         "Evidence variable: occlusion-based `evidence_drop` for each coarse ROI.",
         "",
-        "Project label convention: Class 0 = pre-DBS; Class 1 = post-DBS label.",
+        "Class 0 represents pre-DBS images and Class 1 represents post-DBS images.",
         "",
         "## Ranked By FDR-Adjusted Permutation Test",
         "",

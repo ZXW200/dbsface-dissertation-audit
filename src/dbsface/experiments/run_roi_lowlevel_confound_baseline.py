@@ -1,8 +1,7 @@
 """Run a low-level ROI statistics baseline for the PD-DBS audit.
 
-The model sees only per-ROI intensity and texture summaries, not raw pixels or
-spatial face structure. This provides a stronger low-level confound comparator
-than whole-image global statistics alone.
+The model uses only per-ROI intensity and texture summaries. This provides a
+regional low-level baseline alongside whole-image global statistics.
 """
 
 from __future__ import annotations
@@ -211,7 +210,7 @@ def main() -> int:
     (out_dir / "metrics.json").write_text(json.dumps(metrics, indent=2), encoding="utf-8")
     (out_dir / "run_metadata.json").write_text(json.dumps(metadata, indent=2), encoding="utf-8")
 
-    print("# ROI Low-Level Confound Baseline")
+    print("# ROI Low-Level Baseline")
     print(f"Features: {train_features.shape[1]} per image")
     print(f"Accuracy: {metrics['accuracy']:.4f}")
     print(f"Balanced accuracy: {metrics['balanced_accuracy']:.4f}")

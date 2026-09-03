@@ -107,7 +107,7 @@ def main() -> int:
         "",
         "Only one coarse ROI is retained at a time; all other pixels are replaced with the training mean.",
         "",
-        "Labels follow the project convention: Class 0 = pre-DBS; Class 1 = post-DBS label.",
+        "Class 0 represents pre-DBS images and Class 1 represents post-DBS images.",
         "",
         "| ROI | Accuracy | Balanced accuracy | AUROC | Trapezoidal AUPRC | Mean true confidence |",
         "|---|---:|---:|---:|---:|---:|",

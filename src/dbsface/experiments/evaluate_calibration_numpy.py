@@ -74,7 +74,7 @@ def main() -> int:
 
     metrics = {
         "predictions": str(Path(args.predictions).resolve()),
-        "label_semantics": "Class 0 = pre-DBS; Class 1 = post-DBS label",
+        "label_semantics": "Class 0 = pre-DBS; Class 1 = post-DBS",
         "n": int(len(df)),
         "n_bins": args.n_bins,
         "brier_score": brier,
@@ -95,7 +95,7 @@ def main() -> int:
         f"Mean predicted p_class1: {metrics['mean_p_class1']:.6f}",
         f"Observed Class 1 fraction: {metrics['observed_fraction_class1']:.6f}",
         "",
-        "Interpretation boundary: calibration is evaluated for numeric Class 0 vs Class 1, not clinical DBS-state status.",
+        "Calibration summary: numeric Class 0 versus Class 1 probabilities for the supplied task.",
     ]
     (out_dir / "calibration_summary.md").write_text("\n".join(md) + "\n", encoding="utf-8")
     print(json.dumps(metrics, indent=2))

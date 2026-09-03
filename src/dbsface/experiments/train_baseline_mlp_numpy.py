@@ -3,8 +3,8 @@
 The script writes the output contract used by downstream audit stages: metrics,
 per-sample predictions, curves, figures, and a model checkpoint.
 
-All outputs use the project label convention: Class 0 = pre-DBS and Class 1 =
-post-DBS label.
+All outputs use the project convention that Class 0 represents pre-DBS images
+and Class 1 represents post-DBS images.
 """
 
 from __future__ import annotations
@@ -368,7 +368,7 @@ def main() -> int:
 
     metrics = {
         "model_type": "numpy_mlp",
-        "label_semantics": "Class 0 = pre-DBS; Class 1 = post-DBS label",
+        "label_semantics": "Class 0 = pre-DBS; Class 1 = post-DBS",
         "data_path": str(Path(args.data).resolve()),
         "seed": args.seed,
         "val_fraction": args.val_fraction,

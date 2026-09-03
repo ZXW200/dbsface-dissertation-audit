@@ -182,7 +182,7 @@ def main() -> int:
         "",
         f"Detection rate: {detection_rate:.3f} ({int((audit['detected'] == 1).sum())}/{len(audit)})",
         "",
-        "Class convention: Class 0 = pre-DBS; Class 1 = post-DBS label. This is an image-level explanation sensitivity analysis.",
+        "Class 0 represents pre-DBS images and Class 1 represents post-DBS images. The analysis evaluates image-level explanation sensitivity.",
         "",
         "## YuNet dynamic ROI AEV ranking",
         "",

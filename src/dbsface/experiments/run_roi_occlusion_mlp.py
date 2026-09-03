@@ -137,7 +137,7 @@ def main() -> int:
         "# ROI Occlusion AEV Summary",
         "",
         "Model: `models/baseline_mlp_numpy.npz`",
-        "Labels: Class 0 = pre-DBS; Class 1 = post-DBS label.",
+        "Labels: Class 0 = pre-DBS; Class 1 = post-DBS.",
         "",
         "Evidence definition:",
         "",

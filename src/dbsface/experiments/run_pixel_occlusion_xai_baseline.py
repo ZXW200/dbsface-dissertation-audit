@@ -139,14 +139,14 @@ def main() -> int:
 
     comparisons = [
         comparison_row(
-            "MLP region-mask AEV",
+            "MLP mask-out AEV",
             "pixel occlusion ROI mean",
             roi_df,
             "mlp_region_mask_aev",
             "pixel_occlusion_mean_drop",
         ),
         comparison_row(
-            "MLP region-mask AEV",
+            "MLP mask-out AEV",
             "pixel occlusion ROI sum",
             roi_df,
             "mlp_region_mask_aev",
@@ -157,21 +157,21 @@ def main() -> int:
         comparisons.extend(
             [
                 comparison_row(
-                    "MLP region-mask AEV",
+                    "MLP mask-out AEV",
                     "CNN Grad-CAM ROI energy",
                     roi_df,
                     "mlp_region_mask_aev",
                     "cnn_gradcam_energy",
                 ),
                 comparison_row(
-                    "MLP region-mask AEV",
-                    "CNN region-mask AEV",
+                    "MLP mask-out AEV",
+                    "CNN mask-out AEV",
                     roi_df,
                     "mlp_region_mask_aev",
                     "cnn_region_mask_aev",
                 ),
                 comparison_row(
-                    "CNN region-mask AEV",
+                    "CNN mask-out AEV",
                     "CNN Grad-CAM ROI energy",
                     roi_df,
                     "cnn_region_mask_aev",
@@ -208,7 +208,7 @@ def main() -> int:
             "",
             "## ROI summary",
             "",
-            "| ROI | Region-mask AEV | Pixel mean | Pixel sum |",
+            "| ROI | Mask-out AEV | Pixel mean | Pixel sum |",
             "|---|---:|---:|---:|",
         ]
     )
