@@ -70,6 +70,9 @@ def build_masks() -> tuple[list[str], np.ndarray, pd.DataFrame]:
             }
         )
     stacked = np.stack(masks, axis=0)
+    # The eight regions have to be disjoint, otherwise a shared pixel would
+    # contribute its evidence drop to two regions and the per-region numbers
+    # would not be separable. Fail loudly rather than silently double-count.
     overlap = stacked.sum(axis=0)
     if int(overlap.max()) > 1:
         raise ValueError(f"Coarse ROI masks must be mutually exclusive; found {int((overlap > 1).sum())} overlapping pixels")

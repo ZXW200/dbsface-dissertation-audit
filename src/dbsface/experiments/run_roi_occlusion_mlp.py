@@ -27,6 +27,10 @@ def load_model(path: str | Path) -> tuple[dict[str, np.ndarray], np.ndarray, np.
 
 
 def true_confidence(y: np.ndarray, p_class1: np.ndarray) -> np.ndarray:
+    # Confidence in the TRUE class, not the predicted one. For a correctly
+    # classified image the two agree. For a misclassified one they do not, and
+    # using predicted-class confidence would score a region as informative when
+    # masking it pushed the model further into the wrong label.
     return np.where(y == 1, p_class1, 1.0 - p_class1)
 
 
@@ -68,7 +72,14 @@ def main() -> int:
     for roi_idx, roi_name in enumerate(roi_names):
         flat_mask = mask_to_flat(masks[roi_idx])
         x_masked = x_test.copy()
+        # Fill with the training-set mean, so the masked region carries no
+        # information but stays inside the distribution the model was fitted on.
+        # This is a choice, not a neutral erasure: zero fill and blur fill give a
+        # different ranking, which is why both are run as sensitivity conditions.
         x_masked[:, flat_mask] = mean[:, flat_mask]
+        # Mask first in raw pixel space, standardise second. Doing it the other
+        # way round would write the mean of a standardised variable, which is 0,
+        # and that is a different intervention.
         p_masked = forward(model, standardize(x_masked, mean, std))[0]
         y_pred_masked = (p_masked >= 0.5).astype(int)
         true_conf_masked = true_confidence(y, p_masked)

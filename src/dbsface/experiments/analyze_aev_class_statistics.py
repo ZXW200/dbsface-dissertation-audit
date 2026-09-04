@@ -10,6 +10,9 @@ import pandas as pd
 
 
 def bh_fdr(p_values: np.ndarray) -> np.ndarray:
+    # Benjamini-Hochberg over the eight regions. The reverse cumulative minimum
+    # below is what enforces monotonicity: without it a region can end up with a
+    # smaller adjusted p-value than a region ranked above it.
     p_values = np.asarray(p_values, dtype=float)
     n = len(p_values)
     order = np.argsort(p_values)
@@ -35,6 +38,11 @@ def cohen_d(x0: np.ndarray, x1: np.ndarray) -> float:
 def cliffs_delta(x0: np.ndarray, x1: np.ndarray) -> float:
     """Cliff's delta for x1 versus x0."""
 
+    # Reported alongside Cohen's d because the two disagree in a way that
+    # matters here. A group-mean shift can give a respectable d while delta sits
+    # near zero, which means the two distributions almost completely overlap and
+    # no single image is separable. That is the case for the left cheek.
+
     x0_sorted = np.sort(x0)
     greater = np.searchsorted(x0_sorted, x1, side="left").sum()
     less = (len(x0_sorted) - np.searchsorted(x0_sorted, x1, side="right")).sum()
@@ -52,10 +60,18 @@ def permutation_p_value(x0: np.ndarray, x1: np.ndarray, n_perm: int, rng: np.ran
         diff = abs(float(np.mean(perm[:n1]) - np.mean(perm[n1:])))
         if diff >= observed:
             count += 1
+    # The +1 on both sides counts the observed labelling as one of the draws.
+    # It also floors the p-value at 1/(B+1) = 1/5001, so nothing can print as an
+    # exact zero. Values sitting on that floor are reported as the floor rather
+    # than as p = 0.
     return float((count + 1) / (n_perm + 1))
 
 
 def bootstrap_ci(x0: np.ndarray, x1: np.ndarray, n_boot: int, rng: np.random.Generator) -> tuple[float, float]:
+    # The resampling unit is the test image. The .mat carries no participant key,
+    # so images from one person cannot be kept together and these intervals are
+    # narrower than a subject-level design would give. The cluster-robust script
+    # exists to put a bound on how much narrower.
     diffs = np.empty(n_boot, dtype=float)
     for i in range(n_boot):
         s0 = rng.choice(x0, size=len(x0), replace=True)

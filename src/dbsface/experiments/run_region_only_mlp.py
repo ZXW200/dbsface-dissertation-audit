@@ -16,6 +16,11 @@ from train_baseline_mlp_numpy import forward, metric_summary, standardize
 
 
 def mask_to_flat(mask: np.ndarray) -> np.ndarray:
+    # The .mat stores each image in column-major order, but the masks are built
+    # in (row, col) display space. Transposing before flattening is what makes
+    # index i of the 1024-vector the same pixel the mask means. Drop the .T and
+    # every region silently becomes its own transpose, which still runs and
+    # still produces plausible numbers.
     return mask.T.reshape(-1).astype(bool)
 
 

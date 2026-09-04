@@ -121,6 +121,9 @@ def train_mlp(
         "v": {k: np.zeros_like(v) for k, v in model.items()},
     }
     history = []
+    # Keep the lowest-validation-loss weights rather than the last epoch. The
+    # training set is small enough to be fitted perfectly, so the final epoch is
+    # not the best model, and every downstream audit reads this checkpoint.
     best_loss = float("inf")
     best_model = {k: v.copy() for k, v in model.items()}
     step = 0
